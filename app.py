@@ -6,8 +6,13 @@ import datetime
 import io
 import yfinance as yf
 
+#app.pyの前にmomentum_calculator.pyを実行、momentum_data.csvを出力する
+
 # CSV データを読み込み
-df = pd.read_csv("momentum_data.csv")
+# Stooq用
+#df = pd.read_csv("momentum_data.csv")
+# yfinance用
+df = pd.read_csv("momentum_data_yf.csv")
 
 # UIタイトル
 st.title("📈 米国株モメンタム検索アプリ")
@@ -69,6 +74,7 @@ st.download_button(
 # 選択した銘柄の詳細を表示
 selected_ticker = st.selectbox("📌 詳細を表示する銘柄を選択", filtered_df["Ticker"].unique())
 
+#Stooqからデータ取得
 # if selected_ticker:
 #     st.subheader(f"📉 {selected_ticker} の株価チャート")
 
@@ -89,6 +95,7 @@ selected_ticker = st.selectbox("📌 詳細を表示する銘柄を選択", filt
 #     except Exception as e:
 #         st.error(f"❌ 株価データの取得に失敗しました: {e}")
 
+#yfinanceからデータ取得
 if selected_ticker:
     st.subheader(f"📉 {selected_ticker} の株価チャート")
 

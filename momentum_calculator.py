@@ -32,10 +32,11 @@ def extract_tickers_from_csv(nyse_nasdaq_file, output_file):
     nyse_nasdaq_df = pd.read_csv(nyse_nasdaq_file)
     #nasdaq_df = pd.read_csv(nasdaq_file)
 
-    # `Symbol` カラムを取得し、Stooq 用に `.US` を付加
+    # `Symbol` カラムを取得
     nyse_nasdaq_tickers = nyse_nasdaq_df["ACT Symbol"].dropna().unique().tolist()
     #nasdaq_tickers = nasdaq_df["Symbol"].dropna().unique().tolist()
 
+    #Stooqからデータ取得する場合 `.US` を付加
     tickers = [ticker + ".US" for ticker in nyse_nasdaq_tickers]
 
     # CSV に保存
@@ -105,7 +106,16 @@ def main():
     # 📁 CSVに保存
     df_momentum = pd.DataFrame(results)
     df_momentum.to_csv("momentum_data.csv", index=False)
-    print("✅ モメンタムデータ保存完了: momentum_data.csv")
+
+    #app.pyでyfinanceを使う場合Ticker末尾".US"を削除する
+    # CSVファイルを読み込む
+    df = pd.read_csv('momentum_data.csv')
+    # Ticker列の末尾に '.US' が含まれている行の '.US' を除去
+    df['Ticker'] = df['Ticker'].str.replace(r'\.US$', '', regex=True)
+    # 新しいCSVとして保存
+    df.to_csv('momentum_data_yf.csv', index=False)
+
+    print("✅ モメンタムデータ保存完了: momentum_data.csv, momentum_data_yf.csv")
 
 if __name__ == "__main__":
     main()
