@@ -1,73 +1,111 @@
-import yfinance as yf
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
+import time
+import requests
+from pandas_datareader import data as pdr
 
-# 銘柄リスト（必要に応じて追加）
-TICKERS = ["AAPL", "MSFT", "GOOGL", "TSLA", "AMZN", "NVDA", "META"]
+# 📌 NYSE & NASDAQ 銘柄リストの GitHub URL
+#NYSE_CSV_URL = "https://raw.githubusercontent.com/datasets/nyse-other-listings/main/data/nyse-listed.csv"
+NYSE_NASDAQ_CSV_URL = "https://raw.githubusercontent.com/datasets/nyse-other-listings/main/data/other-listed.csv"
 
-# 取得する期間
-PERIOD = "1y"  # 1年前からのデータ
-
-# モメンタム計算用の期間（営業日ベース）
+# ⏳ 過去何日間のモメンタムを計算するか設定
 MOMENTUM_PERIODS = {
-    "1ヶ月": 21,    # 約21営業日
-    "3ヶ月": 63,    # 約63営業日
-    "6ヶ月": 126,   # 約126営業日
-    "12ヶ月": 252   # 約252営業日
+    "1w": 5,    # 1週間
+    "1m": 21,   # 1か月
+    "3m": 63,   # 3か月
+    "6m": 126,  # 6か月
+    "1y": 252   # 1年
 }
 
-def get_stock_data(ticker):
-    """指定した銘柄の過去1年分の株価データを取得"""
-    stock = yf.Ticker(ticker)
-    df = stock.history(period=PERIOD)
-    return df["Close"]  # 終値のみ取得
+# 1️⃣ GitHub から NYSE & NASDAQ の銘柄リストを取得
+def download_csv(url, filename):
+    response = requests.get(url)
+    if response.status_code == 200:
+        with open(filename, "wb") as f:
+            f.write(response.content)
+        print(f"✅ {filename} をダウンロードしました")
+    else:
+        print(f"❌ {filename} のダウンロードに失敗しました: {response.status_code}")
 
-def calculate_momentum(close_prices):
-    """終値データをもとにモメンタムを計算"""
-    momentum_data = {}
-    for period_name, days in MOMENTUM_PERIODS.items():
-        if len(close_prices) > days:
-            momentum = (close_prices[-1] - close_prices[-days]) / close_prices[-days] * 100
-            momentum_data[period_name] = round(momentum, 2)
+# 2️⃣ CSVから Ticker リストを抽出
+def extract_tickers_from_csv(nyse_nasdaq_file, output_file):
+    nyse_nasdaq_df = pd.read_csv(nyse_nasdaq_file)
+    #nasdaq_df = pd.read_csv(nasdaq_file)
+
+    # `Symbol` カラムを取得し、Stooq 用に `.US` を付加
+    nyse_nasdaq_tickers = nyse_nasdaq_df["ACT Symbol"].dropna().unique().tolist()
+    #nasdaq_tickers = nasdaq_df["Symbol"].dropna().unique().tolist()
+
+    tickers = [ticker + ".US" for ticker in nyse_nasdaq_tickers]
+
+    # CSV に保存
+    pd.DataFrame({"Ticker": tickers}).to_csv(output_file, index=False)
+    print(f"✅ {output_file} に {len(tickers)} 銘柄を保存しました")
+
+# 3️⃣ `tickers.csv` を読み込む
+def load_tickers_from_csv(csv_file):
+    df = pd.read_csv(csv_file)
+    tickers = df["Ticker"].tolist()
+    return tickers
+
+# 4️⃣ 株価データを取得
+def fetch_stock_data(ticker):
+    try:
+        df = pdr.get_data_stooq(ticker)
+        df = df.sort_index()  # Stooqは降順なので昇順に変更
+        return df
+    except Exception as e:
+        print(f"❌ {ticker} のデータ取得失敗: {e}")
+        return None
+
+# 5️⃣ モメンタムを計算
+def calculate_momentum(df):
+    momentum = {}
+    for label, days in MOMENTUM_PERIODS.items():
+        if len(df) >= days:
+            momentum[label] = (df["Close"].iloc[-1] / df["Close"].iloc[-days] - 1) * 100
         else:
-            momentum_data[period_name] = None  # データ不足時
-    return momentum_data
+            momentum[label] = np.nan
+    return momentum
 
+# 🚀 メイン処理
 def main():
+    # nyse_file = "nyse-listed.csv"
+    # nasdaq_file = "other-listed.csv"
+    nyse_nasdaq_file = "other-listed.csv"
+    ticker_file = "tickers.csv"
+
+    # 🔹 NYSE & NASDAQ 銘柄リストを取得
+    #download_csv(NYSE_CSV_URL, nyse_file)
+    
+    #test
+    # download_csv(NYSE_NASDAQ_CSV_URL, nyse_nasdaq_file)
+    
+    # 🔹 Tickerリストを作成
+    #extract_tickers_from_csv(nyse_file, nasdaq_file, ticker_file)
+    extract_tickers_from_csv(nyse_nasdaq_file, ticker_file)
+    
+    # 🔹 銘柄リストを読み込み
+    tickers = load_tickers_from_csv(ticker_file)
+    
     results = []
-    for ticker in TICKERS:
-        try:
-            close_prices = get_stock_data(ticker)
-            momentum = calculate_momentum(close_prices)
-            momentum["Ticker"] = ticker
-            results.append(momentum)
-        except Exception as e:
-            print(f"Error fetching {ticker}: {e}")
 
-    # 結果をデータフレーム化
-    df = pd.DataFrame(results)
-    df = df[["Ticker"] + list(MOMENTUM_PERIODS.keys())]  # 列順を整理
-    return df
+    print(f"📌 {len(tickers)} 銘柄のデータ取得開始...")
+    
+    for i, ticker in enumerate(tickers):
+        print(f"📊 {i+1}/{len(tickers)}: {ticker} のデータ取得中...")
+        df = fetch_stock_data(ticker)
+        
+        if df is not None:
+            momentum = calculate_momentum(df)
+            results.append({"Ticker": ticker, **momentum})
 
-
-def get_stock_details(ticker):
-    """指定した銘柄の詳細情報を取得"""
-    stock = yf.Ticker(ticker)
-    info = stock.info
-    return {
-        "企業名": info.get("longName", "N/A"),
-        "現在価格": info.get("currentPrice", "N/A"),
-        "PER": info.get("trailingPE", "N/A"),
-        "PBR": info.get("priceToBook", "N/A"),
-        "時価総額": info.get("marketCap", "N/A"),
-        "売上": info.get("totalRevenue", "N/A"),
-        "営業利益": info.get("operatingMargins", "N/A"),
-    }
-
+        time.sleep(0.1)  # 🔹 API制限を避けるために1秒待機
+    
+    # 📁 CSVに保存
+    df_momentum = pd.DataFrame(results)
+    df_momentum.to_csv("momentum_data.csv", index=False)
+    print("✅ モメンタムデータ保存完了: momentum_data.csv")
 
 if __name__ == "__main__":
-    df = main()
-    print(df)  # デバッグ用
-
-
+    main()
