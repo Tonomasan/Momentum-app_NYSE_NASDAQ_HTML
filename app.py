@@ -4,6 +4,7 @@ import plotly.express as px
 import pandas_datareader.data as web
 import datetime
 import io
+import yfinance as yf
 
 # CSV データを読み込み
 df = pd.read_csv("momentum_data.csv")
@@ -68,6 +69,26 @@ st.download_button(
 # 選択した銘柄の詳細を表示
 selected_ticker = st.selectbox("📌 詳細を表示する銘柄を選択", filtered_df["Ticker"].unique())
 
+# if selected_ticker:
+#     st.subheader(f"📉 {selected_ticker} の株価チャート")
+
+#     # 過去1年間の株価データを取得
+#     start_date = datetime.datetime.now() - datetime.timedelta(days=365)
+#     end_date = datetime.datetime.now()
+
+#     try:
+#         stock_data = web.DataReader(selected_ticker, "stooq", start_date, end_date)
+
+#         # Stooqのデータは日付が降順なので、昇順に並び替え
+#         stock_data = stock_data.sort_index()
+
+#         # チャートを描画
+#         fig = px.line(stock_data, x=stock_data.index, y="Close", title=f"{selected_ticker} の株価推移")
+#         st.plotly_chart(fig)
+
+#     except Exception as e:
+#         st.error(f"❌ 株価データの取得に失敗しました: {e}")
+
 if selected_ticker:
     st.subheader(f"📉 {selected_ticker} の株価チャート")
 
@@ -76,10 +97,8 @@ if selected_ticker:
     end_date = datetime.datetime.now()
 
     try:
-        stock_data = web.DataReader(selected_ticker, "stooq", start_date, end_date)
-
-        # Stooqのデータは日付が降順なので、昇順に並び替え
-        stock_data = stock_data.sort_index()
+        # yfinanceを使用して株価データを取得
+        stock_data = yf.download(selected_ticker, start=start_date, end=end_date)
 
         # チャートを描画
         fig = px.line(stock_data, x=stock_data.index, y="Close", title=f"{selected_ticker} の株価推移")
