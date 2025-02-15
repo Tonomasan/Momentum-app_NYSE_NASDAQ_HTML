@@ -107,9 +107,15 @@ if selected_ticker:
         # yfinanceを使用して株価データを取得
         stock_data = yf.download(selected_ticker, start=start_date, end=end_date)
 
-        # チャートを描画
-        fig = px.line(stock_data, x=stock_data.index, y="Close", title=f"{selected_ticker} の株価推移")
-        st.plotly_chart(fig)
+        # データの列を確認（デバッグ用）
+        st.write(stock_data.columns)
+
+        # 'Close' 列を使用して株価推移を描画
+        if 'Close' in stock_data.columns:
+            fig = px.line(stock_data, x=stock_data.index, y="Close", title=f"{selected_ticker} の株価推移")
+            st.plotly_chart(fig)
+        else:
+            st.error("❌ 株価データの取得に失敗しました: 'Close' 列が見つかりませんでした")
 
     except Exception as e:
         st.error(f"❌ 株価データの取得に失敗しました: {e}")
