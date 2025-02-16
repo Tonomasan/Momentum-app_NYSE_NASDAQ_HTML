@@ -33,7 +33,8 @@ st.sidebar.download_button(
 
 # モメンタム期間別スライダー
 st.sidebar.header("📊 モメンタム期間別フィルタ")
-momentum_min_1w, momentum_max_1w = st.sidebar.slider("1週間モメンタム", -50, 100, (-10, 30))
+# momentum_min_1w, momentum_max_1w = st.sidebar.slider("1週間モメンタム", -50, 100, (-10, 30))
+momentum_min_1w, momentum_max_1w = st.sidebar.slider("1週間モメンタム", -100, 100, (-100, 100))
 momentum_min_1m, momentum_max_1m = st.sidebar.slider("1ヶ月モメンタム", -50, 100, (-10, 30))
 momentum_min_3m, momentum_max_3m = st.sidebar.slider("3ヶ月モメンタム", -50, 100, (-10, 30))
 momentum_min_6m, momentum_max_6m = st.sidebar.slider("6ヶ月モメンタム", -50, 100, (-10, 30))
@@ -41,6 +42,9 @@ momentum_min_1y, momentum_max_1y = st.sidebar.slider("1年モメンタム", -50,
 
 # 並び順
 sort_order = st.radio("並び順", ["昇順 (低い順)", "降順 (高い順)"])
+
+#test
+st.write(df.columns)
 
 # モメンタム条件に基づいてフィルタリング
 filtered_df = df[
@@ -67,6 +71,8 @@ if filtered_df.empty:
 #test
 if "Ticker" not in df.columns:
     st.error("❌ 'Ticker' 列が見つかりません！CSV のヘッダーを確認してください。")
+st.write("📌 `Ticker` カラムのデータ型:", df["Ticker"].dtype)
+df["Ticker"] = df["Ticker"].astype(str)  # 文字列に変換
 
 
 # 検索キーワードで絞り込み
