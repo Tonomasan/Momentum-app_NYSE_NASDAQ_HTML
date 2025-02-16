@@ -61,6 +61,14 @@ st.write("📌 読み込んだデータ（最初の5行）:", df.head())
 st.write("📌 データ件数:", len(df))
 st.write("📌 データのカラム:", df.columns)
 
+if filtered_df.empty:
+    st.warning("⚠ フィルタ結果が空です。条件を緩めてください。")
+
+#test
+if "Ticker" not in df.columns:
+    st.error("❌ 'Ticker' 列が見つかりません！CSV のヘッダーを確認してください。")
+
+
 # 検索キーワードで絞り込み
 # search_query = st.text_input("🔍 Ticker または企業名を入力してください", "")
 # if search_query:
@@ -75,9 +83,6 @@ if search_query:
 
     ]
 
-#test
-if "Ticker" not in df.columns:
-    st.error("❌ 'Ticker' 列が見つかりません！CSV のヘッダーを確認してください。")
 
 # 並び替え（昇順・降順）
 ascending = True if sort_order == "昇順 (低い順)" else False
