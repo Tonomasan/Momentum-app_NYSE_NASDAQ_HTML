@@ -49,11 +49,16 @@ filtered_df = df[
 ]
 
 # 検索キーワードで絞り込み
-search_query = st.text_input("🔍 Ticker または企業名を入力してください", "")
+# search_query = st.text_input("🔍 Ticker または企業名を入力してください", "")
+# if search_query:
+#     filtered_df = filtered_df[
+#         filtered_df["Ticker"].str.contains(search_query, case=False, na=False) |
+#         filtered_df["Company"].str.contains(search_query, case=False, na=False)
+#     ]
+search_query = st.text_input("🔍 Ticker を入力してください", "")
 if search_query:
     filtered_df = filtered_df[
-        filtered_df["Ticker"].str.contains(search_query, case=False, na=False) |
-        filtered_df["Company"].str.contains(search_query, case=False, na=False)
+        filtered_df["Ticker"].str.contains(search_query, case=False, na=False)
     ]
 
 # 並び替え（昇順・降順）
