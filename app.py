@@ -55,14 +55,23 @@ sort_order = st.radio("並び順", ["昇順 (低い順)", "降順 (高い順)"])
 #test
 st.write(df.columns)
 
-# モメンタム条件に基づいてフィルタリング
-filtered_df = df[
-    (df["1w"] >= momentum_min_1w) & (df["1w"] <= momentum_max_1w) &
-    (df["1m"] >= momentum_min_1m) & (df["1m"] <= momentum_max_1m) &
-    (df["3m"] >= momentum_min_3m) & (df["3m"] <= momentum_max_3m) &
-    (df["6m"] >= momentum_min_6m) & (df["6m"] <= momentum_max_6m) &
-    (df["1y"] >= momentum_min_1y) & (df["1y"] <= momentum_max_1y)
-]
+#test
+# # モメンタム条件に基づいてフィルタリング
+# filtered_df = df[
+#     (df["1w"] >= momentum_min_1w) & (df["1w"] <= momentum_max_1w) &
+#     (df["1m"] >= momentum_min_1m) & (df["1m"] <= momentum_max_1m) &
+#     (df["3m"] >= momentum_min_3m) & (df["3m"] <= momentum_max_3m) &
+#     (df["6m"] >= momentum_min_6m) & (df["6m"] <= momentum_max_6m) &
+#     (df["1y"] >= momentum_min_1y) & (df["1y"] <= momentum_max_1y)
+# ]
+
+#test
+# 🔹 フィルタを適用せずに全データを表示（テスト用）
+filtered_df = df
+
+# デバッグ用
+st.write("📌 フィルタ適用前のデータ:", filtered_df)
+st.write("🔢 フィルタ適用前のデータ件数:", len(filtered_df))
 
 #test
 st.write("📌 フィルタ後のデータ:", filtered_df)
