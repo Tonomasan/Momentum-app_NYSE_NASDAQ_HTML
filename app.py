@@ -14,6 +14,25 @@ import yfinance as yf
 # yfinance用
 df = pd.read_csv("momentum_data_yf.csv")
 
+#test
+# 1. モメンタム列を数値型に変換
+df["1w"] = pd.to_numeric(df["1w"], errors='coerce')
+df["1m"] = pd.to_numeric(df["1m"], errors='coerce')
+df["3m"] = pd.to_numeric(df["3m"], errors='coerce')
+df["6m"] = pd.to_numeric(df["6m"], errors='coerce')
+df["1y"] = pd.to_numeric(df["1y"], errors='coerce')
+
+# 2. NaN（欠損値）を削除
+df = df.dropna(subset=["1w", "1m", "3m", "6m", "1y"])
+
+# 3. モメンタム値の範囲を表示
+st.write("📊 モメンタム値の範囲:")
+st.write("1w 最小値:", df["1w"].min(), "最大値:", df["1w"].max())
+st.write("1m 最小値:", df["1m"].min(), "最大値:", df["1m"].max())
+st.write("3m 最小値:", df["3m"].min(), "最大値:", df["3m"].max())
+st.write("6m 最小値:", df["6m"].min(), "最大値:", df["6m"].max())
+st.write("1y 最小値:", df["1y"].min(), "最大値:", df["1y"].max())
+
 # 🔹 Ticker のデータクリーニング
 df = df.dropna(subset=["Ticker"])  # NaNを削除
 df["Ticker"] = df["Ticker"].astype(str).str.strip()  # 文字列に変換 + 空白削除
