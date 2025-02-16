@@ -13,16 +13,28 @@ import yfinance as yf
 # df = pd.read_csv("momentum_data.csv")
 # yfinance用
 df = pd.read_csv("momentum_data_yf.csv")
+
+#test
 st.write("📌 CSV のデータ（最初の5行）:", df.head())
 st.write("📌 `NaN` のカウント:", df.isna().sum())
 
+# Ticker による `NaN` を除外
+df = df.dropna(subset=["Ticker"])
+
+# モメンタムの `NaN` は 0 で埋める
+df.fillna(0, inplace=True)
+
+#test
+st.write("📌 CSV のデータ（最初の5行）:", df.head())
+st.write("📌 `Nanを0で埋めた後のNaN` のカウント:", df.isna().sum())
+
 #test
 # 1. モメンタム列を数値型に変換
-df["1w"] = pd.to_numeric(df["1w"], errors='coerce')
-df["1m"] = pd.to_numeric(df["1m"], errors='coerce')
-df["3m"] = pd.to_numeric(df["3m"], errors='coerce')
-df["6m"] = pd.to_numeric(df["6m"], errors='coerce')
-df["1y"] = pd.to_numeric(df["1y"], errors='coerce')
+# df["1w"] = pd.to_numeric(df["1w"], errors='coerce')
+# df["1m"] = pd.to_numeric(df["1m"], errors='coerce')
+# df["3m"] = pd.to_numeric(df["3m"], errors='coerce')
+# df["6m"] = pd.to_numeric(df["6m"], errors='coerce')
+# df["1y"] = pd.to_numeric(df["1y"], errors='coerce')
 
 # 2. NaN（欠損値）を削除
 df = df.dropna(subset=["1w", "1m", "3m", "6m", "1y"])
