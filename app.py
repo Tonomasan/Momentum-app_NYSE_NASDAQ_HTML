@@ -14,42 +14,8 @@ import yfinance as yf
 # yfinance用
 df = pd.read_csv("momentum_data_yf.csv")
 
-#test
-st.write("📌 CSV のデータ（最初の5行）:", df.head())
-st.write("📌 `NaN` のカウント:", df.isna().sum())
-
-# Ticker による `NaN` を除外
-# df = df.dropna(subset=["Ticker"])
-
 # モメンタムの `NaN` は 0 で埋める
 df.fillna(0, inplace=True)
-
-#test
-# st.write("📌 CSV のデータ（最初の5行）:", df.head())
-# st.write("📌 `Nanを0で埋めた後のNaN` のカウント:", df.isna().sum())
-
-# 2. NaN（欠損値）を削除
-# df = df.dropna(subset=["1w", "1m", "3m", "6m", "1y"])
-
-# 3. モメンタム値の範囲を表示
-# st.write("📊 モメンタム値の範囲:")
-# st.write("1w 最小値:", df["1w"].min(), "最大値:", df["1w"].max())
-# st.write("1m 最小値:", df["1m"].min(), "最大値:", df["1m"].max())
-# st.write("3m 最小値:", df["3m"].min(), "最大値:", df["3m"].max())
-# st.write("6m 最小値:", df["6m"].min(), "最大値:", df["6m"].max())
-# st.write("1y 最小値:", df["1y"].min(), "最大値:", df["1y"].max())
-
-# 🔹 Ticker のデータクリーニング
-# df = df.dropna(subset=["Ticker"])  # NaNを削除
-# df["Ticker"] = df["Ticker"].astype(str).str.strip()  # 文字列に変換 + 空白削除
-
-# # デバッグ用: データ確認
-# st.write("📌 `Ticker` のユニークな値:", df["Ticker"].unique())
-# st.write("📌 `Ticker` のデータ型:", df["Ticker"].dtype)
-# #test
-# st.write(df.dtypes)
-# st.write("📌 `df` の最初の数行:", df.head())  # データの中身を確認
-# st.write("📌 `df` のデータ型:", df.dtypes)  # 各カラムのデータ型を確認
 
 # UIタイトル
 st.title("📈 米国株モメンタム検索アプリ")
@@ -89,16 +55,6 @@ filtered_df = df[
 st.write("📌 フィルタ後のデータ:", filtered_df)
 st.write("🔢 フィルタ後のデータ件数:", len(filtered_df))
 st.write("📌 フィルタ後の Ticker リスト:", filtered_df["Ticker"].unique())
-
-#test
-st.write("📌 フィルタ後のデータ:", filtered_df)
-st.write("🔢 フィルタ後のデータ件数:", len(filtered_df))
-st.write("📌 フィルタ後の Ticker リスト:", filtered_df["Ticker"].unique())
-st.write("📌 Ticker 列のデータ型:", filtered_df["Ticker"].dtype)
-
-st.write("📌 読み込んだデータ（最初の5行）:", df.head())
-st.write("📌 データ件数:", len(df))
-st.write("📌 データのカラム:", df.columns)
 
 if filtered_df.empty:
     st.warning("⚠ フィルタ結果が空です。条件を緩めてください。")
@@ -163,8 +119,8 @@ if selected_ticker:
         # yfinanceを使用して株価データを取得
         stock_data = yf.download(selected_ticker, start=start_date, end=end_date)
 
-        # データの列を確認（デバッグ用）
-        st.write(stock_data.columns)
+        # # データの列を確認（デバッグ用）
+        # st.write(stock_data.columns)
 
         # 'Close' 列を使用して株価推移を描画
         if 'Close' in stock_data.columns:
