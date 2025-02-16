@@ -15,8 +15,8 @@ import yfinance as yf
 df = pd.read_csv("momentum_data_yf.csv")
 
 #test
-st.write("📂 読み込んだデータの先頭5行:", df.head())
-st.write("📂 データの列名:", df.columns)
+df["Ticker"] = df["Ticker"].astype(str)  # 明示的に文字列へ変換
+
 
 # UIタイトル
 st.title("📈 米国株モメンタム検索アプリ")
