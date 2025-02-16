@@ -72,12 +72,12 @@ search_query = st.text_input("🔍 Ticker を入力してください", "")
 if search_query:
     filtered_df = filtered_df[
         filtered_df["Ticker"].str.contains(search_query, case=False, na=False)
-        #test
-        if "Ticker" not in df.columns:
-            st.error("❌ 'Ticker' 列が見つかりません！CSV のヘッダーを確認してください。")
+
     ]
 
-
+#test
+if "Ticker" not in df.columns:
+    st.error("❌ 'Ticker' 列が見つかりません！CSV のヘッダーを確認してください。")
 
 # 並び替え（昇順・降順）
 ascending = True if sort_order == "昇順 (低い順)" else False
