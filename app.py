@@ -14,6 +14,8 @@ import yfinance as yf
 # yfinance用
 df = pd.read_csv("momentum_data_yf.csv")
 
+#test
+st.write(df.dtypes)
 
 # UIタイトル
 st.title("📈 米国株モメンタム検索アプリ")
