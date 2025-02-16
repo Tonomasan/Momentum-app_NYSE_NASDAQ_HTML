@@ -39,8 +39,6 @@ momentum_min_3m, momentum_max_3m = st.sidebar.slider("3ヶ月モメンタム", -
 momentum_min_6m, momentum_max_6m = st.sidebar.slider("6ヶ月モメンタム", -50, 100, (-10, 30))
 momentum_min_1y, momentum_max_1y = st.sidebar.slider("1年モメンタム", -50, 100, (-10, 30))
 
-# 並び順
-sort_order = st.radio("並び順", ["昇順 (低い順)", "降順 (高い順)"])
 
 # フィルタ処理（スライダー値を利用）
 filtered_df = df[
@@ -52,9 +50,8 @@ filtered_df = df[
 ]
 
 # フィルタ後のデータを表示
-st.write("📌 フィルタ後のデータ:", filtered_df)
 st.write("🔢 フィルタ後のデータ件数:", len(filtered_df))
-st.write("📌 フィルタ後の Ticker リスト:", filtered_df["Ticker"].unique())
+st.write("📌 フィルタ後のデータ:", filtered_df)
 
 if filtered_df.empty:
     st.warning("⚠ フィルタ結果が空です。条件を緩めてください。")
@@ -66,6 +63,8 @@ if search_query:
 
     ]
 
+# 並び順
+sort_order = st.radio("並び順", ["昇順 (低い順)", "降順 (高い順)"])
 
 # 並び替え（昇順・降順）
 ascending = True if sort_order == "昇順 (低い順)" else False
