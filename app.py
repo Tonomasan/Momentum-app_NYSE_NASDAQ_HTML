@@ -23,7 +23,8 @@ csv = df.to_csv(index=False).encode("utf-8")
 st.sidebar.download_button(
     label="📥 モメンタムデータをダウンロード",
     data=csv,
-    file_name="momentum_data.csv",
+    #file_name="momentum_data.csv",
+    file_name="momentum_data_yf.csv",
     mime="text/csv"
 )
 
