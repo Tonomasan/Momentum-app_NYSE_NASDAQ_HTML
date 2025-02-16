@@ -49,11 +49,18 @@ momentum_min_3m, momentum_max_3m = st.sidebar.slider("3ヶ月モメンタム", -
 momentum_min_6m, momentum_max_6m = st.sidebar.slider("6ヶ月モメンタム", -50, 100, (-10, 30))
 momentum_min_1y, momentum_max_1y = st.sidebar.slider("1年モメンタム", -50, 100, (-10, 30))
 
+#test
+st.write("📌 `df['1w']` の最小値:", df["1w"].min())
+st.write("📌 `df['1w']` の最大値:", df["1w"].max())
+
+
 # 並び順
 sort_order = st.radio("並び順", ["昇順 (低い順)", "降順 (高い順)"])
 
 #test
 st.write(df.columns)
+# NaN（欠損値）を含む行を削除
+df = df.dropna(subset=["1w", "1m", "3m", "6m", "1y"])
 
 #test
 # # モメンタム条件に基づいてフィルタリング
@@ -64,6 +71,15 @@ st.write(df.columns)
 #     (df["6m"] >= momentum_min_6m) & (df["6m"] <= momentum_max_6m) &
 #     (df["1y"] >= momentum_min_1y) & (df["1y"] <= momentum_max_1y)
 # ]
+
+# フィルタ適用後のデータ確認
+filtered_df = df[
+    (df["1w"] >= momentum_min_1w) & (df["1w"] <= momentum_max_1w) &
+    (df["1m"] >= momentum_min_1m) & (df["1m"] <= momentum_max_1m) &
+    (df["3m"] >= momentum_min_3m) & (df["3m"] <= momentum_max_3m) &
+    (df["6m"] >= momentum_min_6m) & (df["6m"] <= momentum_max_6m) &
+    (df["1y"] >= momentum_min_1y) & (df["1y"] <= momentum_max_1y)
+]
 
 #test
 # 🔹 フィルタを適用せずに全データを表示（テスト用）
