@@ -14,9 +14,6 @@ import yfinance as yf
 # yfinance用
 df = pd.read_csv("momentum_data_yf.csv")
 
-#test
-df["Ticker"] = df["Ticker"].astype(str)  # 明示的に文字列へ変換
-
 
 # UIタイトル
 st.title("📈 米国株モメンタム検索アプリ")
@@ -51,6 +48,14 @@ filtered_df = df[
     (df["6m"] >= momentum_min_6m) & (df["6m"] <= momentum_max_6m) &
     (df["1y"] >= momentum_min_1y) & (df["1y"] <= momentum_max_1y)
 ]
+
+#test
+st.write("📌 フィルタ後のデータ:", filtered_df)
+st.write("🔢 フィルタ後のデータ件数:", len(filtered_df))
+st.write("📌 フィルタ後の Ticker リスト:", filtered_df["Ticker"].unique())
+st.write("📌 Ticker 列のデータ型:", filtered_df["Ticker"].dtype)
+
+
 
 # 検索キーワードで絞り込み
 # search_query = st.text_input("🔍 Ticker または企業名を入力してください", "")
