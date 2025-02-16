@@ -55,7 +55,9 @@ st.write("🔢 フィルタ後のデータ件数:", len(filtered_df))
 st.write("📌 フィルタ後の Ticker リスト:", filtered_df["Ticker"].unique())
 st.write("📌 Ticker 列のデータ型:", filtered_df["Ticker"].dtype)
 
-
+st.write("📌 読み込んだデータ（最初の5行）:", df.head())
+st.write("📌 データ件数:", len(df))
+st.write("📌 データのカラム:", df.columns)
 
 # 検索キーワードで絞り込み
 # search_query = st.text_input("🔍 Ticker または企業名を入力してください", "")
