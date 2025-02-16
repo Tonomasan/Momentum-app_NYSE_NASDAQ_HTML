@@ -14,6 +14,13 @@ import yfinance as yf
 # yfinance用
 df = pd.read_csv("momentum_data_yf.csv")
 
+# 🔹 Ticker のデータクリーニング
+df = df.dropna(subset=["Ticker"])  # NaNを削除
+df["Ticker"] = df["Ticker"].astype(str).str.strip()  # 文字列に変換 + 空白削除
+
+# デバッグ用: データ確認
+st.write("📌 `Ticker` のユニークな値:", df["Ticker"].unique())
+st.write("📌 `Ticker` のデータ型:", df["Ticker"].dtype)
 #test
 st.write(df.dtypes)
 
@@ -73,6 +80,12 @@ if "Ticker" not in df.columns:
     st.error("❌ 'Ticker' 列が見つかりません！CSV のヘッダーを確認してください。")
 st.write("📌 `Ticker` カラムのデータ型:", df["Ticker"].dtype)
 df["Ticker"] = df["Ticker"].astype(str)  # 文字列に変換
+
+#test
+st.write("📌 `Ticker` の欠損値（NaN）の数:", df["Ticker"].isna().sum())
+st.write("📌 `Ticker` のユニーク値:", df["Ticker"].unique())
+df = df.dropna(subset=["Ticker"])  # NaNを含む行を削除
+df["Ticker"] = df["Ticker"].astype(str)  # 念のため再変換
 
 
 # 検索キーワードで絞り込み
