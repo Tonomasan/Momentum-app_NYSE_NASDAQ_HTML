@@ -2,6 +2,8 @@ import pandas as pd
 import numpy as np
 import time
 import requests
+import datetime
+import yfinance as yf
 from pandas_datareader import data as pdr
 
 # 📌 NYSE & NASDAQ 銘柄リストの GitHub URL
@@ -36,8 +38,13 @@ def extract_tickers_from_csv(nyse_nasdaq_file, output_file):
     nyse_nasdaq_tickers = nyse_nasdaq_df["ACT Symbol"].dropna().unique().tolist()
     #nasdaq_tickers = nasdaq_df["Symbol"].dropna().unique().tolist()
 
+    #Stooq用
     #Stooqからデータ取得する場合 `.US` を付加
-    tickers = [ticker + ".US" for ticker in nyse_nasdaq_tickers]
+    #tickers = [ticker + ".US" for ticker in nyse_nasdaq_tickers]
+
+    #yfinance用
+    #'.US'を付加しない
+    tickers = nyse_nasdaq_tickers
 
     # CSV に保存
     pd.DataFrame({"Ticker": tickers}).to_csv(output_file, index=False)
@@ -50,10 +57,31 @@ def load_tickers_from_csv(csv_file):
     return tickers
 
 # 4️⃣ 株価データを取得
+#Stooq用
+# def fetch_stock_data(ticker):
+#     try:
+#         end_date = datetime.datetime.today()
+#         start_date = end_date - datetime.timedelta(days=365)  # 過去1年分のデータ
+
+#         df = pdr.get_data_stooq(ticker, start=start_date, end=end_date)
+#         df = df.sort_index()  # Stooqは降順なので昇順に変更
+#         return df
+#     except Exception as e:
+#         print(f"❌ {ticker} のデータ取得失敗: {e}")
+#         return None
+
+#yfinance用
 def fetch_stock_data(ticker):
     try:
-        df = pdr.get_data_stooq(ticker)
-        df = df.sort_index()  # Stooqは降順なので昇順に変更
+        end_date = datetime.datetime.today()
+        start_date = end_date - datetime.timedelta(days=365)  # 過去1年分のデータ
+
+        # 株価データ取得
+        df = yf.download(ticker, start=start_date, end=end_date)
+
+        # インデックスを datetime 型に変換（yfinance はデフォルトで datetime）
+        df.index = pd.to_datetime(df.index)
+
         return df
     except Exception as e:
         print(f"❌ {ticker} のデータ取得失敗: {e}")
@@ -74,17 +102,21 @@ def main():
     # nyse_file = "nyse-listed.csv"
     # nasdaq_file = "other-listed.csv"
     nyse_nasdaq_file = "other-listed.csv"
+    test_file = "other-listed_test.csv"
+
     ticker_file = "tickers.csv"
 
     # 🔹 NYSE & NASDAQ 銘柄リストを取得
     #download_csv(NYSE_CSV_URL, nyse_file)
     
-    #test
-    # download_csv(NYSE_NASDAQ_CSV_URL, nyse_nasdaq_file)
+    download_csv(NYSE_NASDAQ_CSV_URL, nyse_nasdaq_file)
     
     # 🔹 Tickerリストを作成
     #extract_tickers_from_csv(nyse_file, nasdaq_file, ticker_file)
-    extract_tickers_from_csv(nyse_nasdaq_file, ticker_file)
+    
+    #test
+    #extract_tickers_from_csv(nyse_nasdaq_file, ticker_file)
+    extract_tickers_from_csv(test_file, ticker_file)
     
     # 🔹 銘柄リストを読み込み
     tickers = load_tickers_from_csv(ticker_file)
@@ -98,10 +130,13 @@ def main():
         df = fetch_stock_data(ticker)
         
         if df is not None:
+            #test
+            # filename = f"tickers_data_yf_{i}.csv"  # i を末尾に追加
+            # df.to_csv(filename, index=False)  # i を追加したファイル名で保存
             momentum = calculate_momentum(df)
             results.append({"Ticker": ticker, **momentum})
 
-        time.sleep(0.1)  # 🔹 API制限を避けるために1秒待機
+        time.sleep(1)  # 🔹 API制限を避けるために1秒待機
     
     # 📁 CSVに保存
     df_momentum = pd.DataFrame(results)

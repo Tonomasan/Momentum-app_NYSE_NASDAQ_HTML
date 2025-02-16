@@ -10,7 +10,7 @@ import yfinance as yf
 
 # CSV データを読み込み
 # Stooq用
-#df = pd.read_csv("momentum_data.csv")
+# df = pd.read_csv("momentum_data.csv")
 # yfinance用
 df = pd.read_csv("momentum_data_yf.csv")
 
