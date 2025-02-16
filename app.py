@@ -81,7 +81,10 @@ st.write("1y 最小値:", df["1y"].min(), "最大値:", df["1y"].max())
 #     (df["1y"] >= momentum_min_1y) & (df["1y"] <= momentum_max_1y)
 # ]
 
-# フィルタ適用後のデータ確認
+# NaNを削除
+df = df.dropna(subset=["1w", "1m", "3m", "6m", "1y"])
+
+# フィルタ処理（スライダー値を利用）
 filtered_df = df[
     (df["1w"] >= momentum_min_1w) & (df["1w"] <= momentum_max_1w) &
     (df["1m"] >= momentum_min_1m) & (df["1m"] <= momentum_max_1m) &
@@ -90,6 +93,10 @@ filtered_df = df[
     (df["1y"] >= momentum_min_1y) & (df["1y"] <= momentum_max_1y)
 ]
 
+# フィルタ後のデータを表示
+st.write("📌 フィルタ後のデータ:", filtered_df)
+st.write("🔢 フィルタ後のデータ件数:", len(filtered_df))
+st.write("📌 フィルタ後の Ticker リスト:", filtered_df["Ticker"].unique())
 #test
 # # 🔹 フィルタを適用せずに全データを表示（テスト用）
 # filtered_df = df
