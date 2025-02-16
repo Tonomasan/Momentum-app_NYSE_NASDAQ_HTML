@@ -13,6 +13,8 @@ import yfinance as yf
 # df = pd.read_csv("momentum_data.csv")
 # yfinance用
 df = pd.read_csv("momentum_data_yf.csv")
+st.write("📌 CSV のデータ（最初の5行）:", df.head())
+st.write("📌 `NaN` のカウント:", df.isna().sum())
 
 #test
 # 1. モメンタム列を数値型に変換
