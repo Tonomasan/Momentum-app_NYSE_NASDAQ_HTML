@@ -19,45 +19,37 @@ st.write("📌 CSV のデータ（最初の5行）:", df.head())
 st.write("📌 `NaN` のカウント:", df.isna().sum())
 
 # Ticker による `NaN` を除外
-df = df.dropna(subset=["Ticker"])
+# df = df.dropna(subset=["Ticker"])
 
 # モメンタムの `NaN` は 0 で埋める
 df.fillna(0, inplace=True)
 
 #test
-st.write("📌 CSV のデータ（最初の5行）:", df.head())
-st.write("📌 `Nanを0で埋めた後のNaN` のカウント:", df.isna().sum())
-
-#test
-# 1. モメンタム列を数値型に変換
-# df["1w"] = pd.to_numeric(df["1w"], errors='coerce')
-# df["1m"] = pd.to_numeric(df["1m"], errors='coerce')
-# df["3m"] = pd.to_numeric(df["3m"], errors='coerce')
-# df["6m"] = pd.to_numeric(df["6m"], errors='coerce')
-# df["1y"] = pd.to_numeric(df["1y"], errors='coerce')
+# st.write("📌 CSV のデータ（最初の5行）:", df.head())
+# st.write("📌 `Nanを0で埋めた後のNaN` のカウント:", df.isna().sum())
 
 # 2. NaN（欠損値）を削除
-df = df.dropna(subset=["1w", "1m", "3m", "6m", "1y"])
+# df = df.dropna(subset=["1w", "1m", "3m", "6m", "1y"])
 
 # 3. モメンタム値の範囲を表示
-st.write("📊 モメンタム値の範囲:")
-st.write("1w 最小値:", df["1w"].min(), "最大値:", df["1w"].max())
-st.write("1m 最小値:", df["1m"].min(), "最大値:", df["1m"].max())
-st.write("3m 最小値:", df["3m"].min(), "最大値:", df["3m"].max())
-st.write("6m 最小値:", df["6m"].min(), "最大値:", df["6m"].max())
-st.write("1y 最小値:", df["1y"].min(), "最大値:", df["1y"].max())
+# st.write("📊 モメンタム値の範囲:")
+# st.write("1w 最小値:", df["1w"].min(), "最大値:", df["1w"].max())
+# st.write("1m 最小値:", df["1m"].min(), "最大値:", df["1m"].max())
+# st.write("3m 最小値:", df["3m"].min(), "最大値:", df["3m"].max())
+# st.write("6m 最小値:", df["6m"].min(), "最大値:", df["6m"].max())
+# st.write("1y 最小値:", df["1y"].min(), "最大値:", df["1y"].max())
 
 # 🔹 Ticker のデータクリーニング
-df = df.dropna(subset=["Ticker"])  # NaNを削除
-df["Ticker"] = df["Ticker"].astype(str).str.strip()  # 文字列に変換 + 空白削除
+# df = df.dropna(subset=["Ticker"])  # NaNを削除
+# df["Ticker"] = df["Ticker"].astype(str).str.strip()  # 文字列に変換 + 空白削除
 
-# デバッグ用: データ確認
-st.write("📌 `Ticker` のユニークな値:", df["Ticker"].unique())
-st.write("📌 `Ticker` のデータ型:", df["Ticker"].dtype)
-#test
-st.write(df.dtypes)
-st.write("📌 `df` の最初の数行:", df.head())  # データの中身を確認
-st.write("📌 `df` のデータ型:", df.dtypes)  # 各カラムのデータ型を確認
+# # デバッグ用: データ確認
+# st.write("📌 `Ticker` のユニークな値:", df["Ticker"].unique())
+# st.write("📌 `Ticker` のデータ型:", df["Ticker"].dtype)
+# #test
+# st.write(df.dtypes)
+# st.write("📌 `df` の最初の数行:", df.head())  # データの中身を確認
+# st.write("📌 `df` のデータ型:", df.dtypes)  # 各カラムのデータ型を確認
 
 # UIタイトル
 st.title("📈 米国株モメンタム検索アプリ")
@@ -75,47 +67,14 @@ st.sidebar.download_button(
 
 # モメンタム期間別スライダー
 st.sidebar.header("📊 モメンタム期間別フィルタ")
-# momentum_min_1w, momentum_max_1w = st.sidebar.slider("1週間モメンタム", -50, 100, (-10, 30))
-momentum_min_1w, momentum_max_1w = st.sidebar.slider("1週間モメンタム", -100, 100, (-100, 100))
+momentum_min_1w, momentum_max_1w = st.sidebar.slider("1週間モメンタム", -50, 100, (-10, 30))
 momentum_min_1m, momentum_max_1m = st.sidebar.slider("1ヶ月モメンタム", -50, 100, (-10, 30))
 momentum_min_3m, momentum_max_3m = st.sidebar.slider("3ヶ月モメンタム", -50, 100, (-10, 30))
 momentum_min_6m, momentum_max_6m = st.sidebar.slider("6ヶ月モメンタム", -50, 100, (-10, 30))
 momentum_min_1y, momentum_max_1y = st.sidebar.slider("1年モメンタム", -50, 100, (-10, 30))
 
-#test
-st.write("📌 `df['1w']` の最小値:", df["1w"].min())
-st.write("📌 `df['1w']` の最大値:", df["1w"].max())
-
-
 # 並び順
 sort_order = st.radio("並び順", ["昇順 (低い順)", "降順 (高い順)"])
-
-#test
-st.write(df.columns)
-# NaN（欠損値）を含む行を削除
-df = df.dropna(subset=["1w", "1m", "3m", "6m", "1y"])
-
-#test
-st.write("📊 モメンタム値の範囲:")
-st.write("1w 最小値:", df["1w"].min(), "最大値:", df["1w"].max())
-st.write("1m 最小値:", df["1m"].min(), "最大値:", df["1m"].max())
-st.write("3m 最小値:", df["3m"].min(), "最大値:", df["3m"].max())
-st.write("6m 最小値:", df["6m"].min(), "最大値:", df["6m"].max())
-st.write("1y 最小値:", df["1y"].min(), "最大値:", df["1y"].max())
-
-
-#test
-# # モメンタム条件に基づいてフィルタリング
-# filtered_df = df[
-#     (df["1w"] >= momentum_min_1w) & (df["1w"] <= momentum_max_1w) &
-#     (df["1m"] >= momentum_min_1m) & (df["1m"] <= momentum_max_1m) &
-#     (df["3m"] >= momentum_min_3m) & (df["3m"] <= momentum_max_3m) &
-#     (df["6m"] >= momentum_min_6m) & (df["6m"] <= momentum_max_6m) &
-#     (df["1y"] >= momentum_min_1y) & (df["1y"] <= momentum_max_1y)
-# ]
-
-# NaNを削除
-df = df.dropna(subset=["1w", "1m", "3m", "6m", "1y"])
 
 # フィルタ処理（スライダー値を利用）
 filtered_df = df[
@@ -130,13 +89,6 @@ filtered_df = df[
 st.write("📌 フィルタ後のデータ:", filtered_df)
 st.write("🔢 フィルタ後のデータ件数:", len(filtered_df))
 st.write("📌 フィルタ後の Ticker リスト:", filtered_df["Ticker"].unique())
-#test
-# # 🔹 フィルタを適用せずに全データを表示（テスト用）
-# filtered_df = df
-
-# # デバッグ用
-# st.write("📌 フィルタ適用前のデータ:", filtered_df)
-# st.write("🔢 フィルタ適用前のデータ件数:", len(filtered_df))
 
 #test
 st.write("📌 フィルタ後のデータ:", filtered_df)
@@ -151,26 +103,6 @@ st.write("📌 データのカラム:", df.columns)
 if filtered_df.empty:
     st.warning("⚠ フィルタ結果が空です。条件を緩めてください。")
 
-#test
-if "Ticker" not in df.columns:
-    st.error("❌ 'Ticker' 列が見つかりません！CSV のヘッダーを確認してください。")
-st.write("📌 `Ticker` カラムのデータ型:", df["Ticker"].dtype)
-df["Ticker"] = df["Ticker"].astype(str)  # 文字列に変換
-
-#test
-st.write("📌 `Ticker` の欠損値（NaN）の数:", df["Ticker"].isna().sum())
-st.write("📌 `Ticker` のユニーク値:", df["Ticker"].unique())
-df = df.dropna(subset=["Ticker"])  # NaNを含む行を削除
-df["Ticker"] = df["Ticker"].astype(str)  # 念のため再変換
-
-
-# 検索キーワードで絞り込み
-# search_query = st.text_input("🔍 Ticker または企業名を入力してください", "")
-# if search_query:
-#     filtered_df = filtered_df[
-#         filtered_df["Ticker"].str.contains(search_query, case=False, na=False) |
-#         filtered_df["Company"].str.contains(search_query, case=False, na=False)
-#     ]
 search_query = st.text_input("🔍 Ticker を入力してください", "")
 if search_query:
     filtered_df = filtered_df[
