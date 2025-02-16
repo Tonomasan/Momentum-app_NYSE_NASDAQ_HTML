@@ -14,6 +14,10 @@ import yfinance as yf
 # yfinance用
 df = pd.read_csv("momentum_data_yf.csv")
 
+#test
+st.write("📂 読み込んだデータの先頭5行:", df.head())
+st.write("📂 データの列名:", df.columns)
+
 # UIタイトル
 st.title("📈 米国株モメンタム検索アプリ")
 
