@@ -63,24 +63,9 @@ if search_query:
 
     ]
 
-# 並び順
-sort_order = st.radio("並び順", ["昇順 (低い順)", "降順 (高い順)"])
-
-# 並び替え（昇順・降順）
-ascending = True if sort_order == "昇順 (低い順)" else False
-filtered_df = filtered_df.sort_values(by="1y", ascending=ascending)
-
 # テーブル表示
-st.dataframe(filtered_df)
+# st.dataframe(filtered_df)
 
-# 🔹 **フィルタ後のデータもダウンロード可能に**
-filtered_csv = filtered_df.to_csv(index=False).encode("utf-8")
-st.download_button(
-    label="📥 フィルタ後のデータをダウンロード",
-    data=filtered_csv,
-    file_name="filtered_momentum_data.csv",
-    mime="text/csv"
-)
 
 # 選択した銘柄の詳細を表示
 selected_ticker = st.selectbox("📌 詳細を表示する銘柄を選択", filtered_df["Ticker"].unique())
@@ -130,3 +115,12 @@ if selected_ticker:
 
     except Exception as e:
         st.error(f"❌ 株価データの取得に失敗しました: {e}")
+
+# 🔹 **フィルタ後のデータもダウンロード可能に**
+filtered_csv = filtered_df.to_csv(index=False).encode("utf-8")
+st.download_button(
+    label="📥 フィルタ後のデータをダウンロード",
+    data=filtered_csv,
+    file_name="filtered_momentum_data.csv",
+    mime="text/csv"
+)

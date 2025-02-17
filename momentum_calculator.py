@@ -114,9 +114,10 @@ def main():
     # 🔹 Tickerリストを作成
     #extract_tickers_from_csv(nyse_file, nasdaq_file, ticker_file)
     
+ 
+    extract_tickers_from_csv(nyse_nasdaq_file, ticker_file)
     #test
-    #extract_tickers_from_csv(nyse_nasdaq_file, ticker_file)
-    extract_tickers_from_csv(test_file, ticker_file)
+    # extract_tickers_from_csv(test_file, ticker_file)
     
     # 🔹 銘柄リストを読み込み
     tickers = load_tickers_from_csv(ticker_file)
