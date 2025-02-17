@@ -4,6 +4,8 @@ import plotly.express as px
 import pandas_datareader.data as web
 import datetime
 import io
+import plotly.graph_objects as go
+from streamlit.components.v1 import html
 import yfinance as yf
 
 #app.pyの前にmomentum_calculator.pyを実行、momentum_data.csvを出力する
@@ -52,31 +54,16 @@ filtered_df = df[
 # フィルタ後のデータを表示
 st.write("🔢 フィルタ後のデータ件数:", len(filtered_df))
 #st.write("📌 フィルタ後のデータ:", filtered_df)
-#st.write(filtered_df)
+st.write(filtered_df)
 
-# セッション状態の初期化
-if "selected_ticker" not in st.session_state:
-    st.session_state["selected_ticker"] = None
+# TickerクリックでTradingViewチャート表示
+selected_ticker = st.selectbox('Select Ticker to View Chart', filtered_df['Ticker'])
 
-# DataFrameを表示（選択可能にする）
-selected_rows = st.data_editor(
-    df,
-    use_container_width=True,
-    hide_index=True,
-    key="data_editor"
-)
-
-# 選択された行の処理
-if not selected_rows.empty:
-    selected_ticker = selected_rows.iloc[0]["Ticker"]
-    st.session_state["selected_ticker"] = selected_ticker
-
-    # チャートを `expander` で表示（簡易的なポップアップ）
-    with st.expander(f"📊 {selected_ticker} のチャート", expanded=True):
-        tradingview_url = f"https://jp.tradingview.com/chart/?symbol=NASDAQ%3A{selected_ticker}"
-        st.markdown(f'<iframe src="{tradingview_url}" width="700" height="500"></iframe>', unsafe_allow_html=True)
-
-
+if selected_ticker:
+    st.write(f"Displaying chart for {selected_ticker}")
+    html(f"""
+        <iframe src="https://www.tradingview.com/chart/?symbol=NASDAQ%3A{selected_ticker}" width="100%" height="600" frameborder="0"></iframe>
+    """, height=600)
 
 if filtered_df.empty:
     st.warning("⚠ フィルタ結果が空です。条件を緩めてください。")
