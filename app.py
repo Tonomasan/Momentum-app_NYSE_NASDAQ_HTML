@@ -56,25 +56,25 @@ st.write("🔢 フィルタ後のデータ件数:", len(filtered_df))
 
 # セッション状態の初期化（エラー回避）
 if "selected_ticker" not in st.session_state:
-    st.session_state["selected_ticker"] = None
+    st.session_state["selected_ticker"] = ""
 
 # DataFrameを表示（選択可能にする）
 selected_rows = st.data_editor(
     df,
-    column_config={
-        "Ticker": st.column_config.TextColumn("Ticker"),
-    },
+    column_config={"Ticker": st.column_config.TextColumn("Ticker")},
     use_container_width=True,
-    hide_index=True
+    hide_index=True,
+    key="data_editor"  # ← これを追加（状態管理のため）
 )
 
-# ユーザーが行をクリックしたかチェック
+# 行が選択されたか確認
 if not selected_rows.empty:
-    selected_ticker = selected_rows["Ticker"].iloc[0]
+    new_ticker = selected_rows["Ticker"].iloc[0]
 
     # 選択が変わった場合のみ更新
-    if selected_ticker != st.session_state["selected_ticker"]:
-        st.session_state["selected_ticker"] = selected_ticker
+    if new_ticker != st.session_state["selected_ticker"]:
+        st.session_state["selected_ticker"] = new_ticker
+        st.rerun()  # ← これを追加（即時更新）
 
 # 選択された Ticker に基づいて TradingView のリンクを表示
 if st.session_state["selected_ticker"]:
@@ -85,6 +85,8 @@ if st.session_state["selected_ticker"]:
         f'<a href="{tradingview_url}" target="_blank" style="font-size:20px; color:blue; text-decoration:underline;">📈 {st.session_state["selected_ticker"]} のチャートを見る</a>',
         unsafe_allow_html=True
     )
+
+
 if filtered_df.empty:
     st.warning("⚠ フィルタ結果が空です。条件を緩めてください。")
 
