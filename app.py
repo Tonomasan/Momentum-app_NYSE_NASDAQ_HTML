@@ -54,37 +54,29 @@ st.write("🔢 フィルタ後のデータ件数:", len(filtered_df))
 #st.write("📌 フィルタ後のデータ:", filtered_df)
 #st.write(filtered_df)
 
-# セッション状態の初期化（エラー回避）
+# セッション状態の初期化
 if "selected_ticker" not in st.session_state:
-    st.session_state["selected_ticker"] = ""
+    st.session_state["selected_ticker"] = None
 
 # DataFrameを表示（選択可能にする）
 selected_rows = st.data_editor(
     df,
-    column_config={"Ticker": st.column_config.TextColumn("Ticker")},
     use_container_width=True,
     hide_index=True,
-    key="data_editor"  # ← これを追加（状態管理のため）
+    key="data_editor"
 )
 
-# 行が選択されたか確認
-if not selected_rows.empty:
-    new_ticker = selected_rows["Ticker"].iloc[0]
+# 選択された行の処理
+if selected_rows:
+    selected_ticker = df.iloc[selected_rows[0]]["Ticker"]
+    st.session_state["selected_ticker"] = selected_ticker
 
-    # 選択が変わった場合のみ更新
-    if new_ticker != st.session_state["selected_ticker"]:
-        st.session_state["selected_ticker"] = new_ticker
-        st.rerun()  # ← これを追加（即時更新）
+    # モーダル（ポップアップ）を開く
+    with st.modal(f"📊 {selected_ticker} のチャート"):
+        tradingview_url = f"https://jp.tradingview.com/chart/?symbol=NASDAQ%3A{selected_ticker}"
+        st.markdown(f'<iframe src="{tradingview_url}" width="700" height="500"></iframe>', unsafe_allow_html=True)
 
-# 選択された Ticker に基づいて TradingView のリンクを表示
-if st.session_state["selected_ticker"]:
-    tradingview_url = f"https://jp.tradingview.com/chart/?symbol=NASDAQ%3A{st.session_state['selected_ticker']}"
 
-    # TradingView のリンクを表示（動的に変化）
-    st.markdown(
-        f'<a href="{tradingview_url}" target="_blank" style="font-size:20px; color:blue; text-decoration:underline;">📈 {st.session_state["selected_ticker"]} のチャートを見る</a>',
-        unsafe_allow_html=True
-    )
 
 
 if filtered_df.empty:
