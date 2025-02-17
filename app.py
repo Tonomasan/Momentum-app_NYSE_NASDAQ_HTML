@@ -66,13 +66,13 @@ selected_rows = st.data_editor(
     key="data_editor"
 )
 
-# 選択された行の処理（修正）
+# 選択された行の処理
 if not selected_rows.empty:
-    selected_ticker = selected_rows.iloc[0]["Ticker"]  # 最初の選択行を取得
+    selected_ticker = selected_rows.iloc[0]["Ticker"]
     st.session_state["selected_ticker"] = selected_ticker
 
-    # モーダル（ポップアップ）を開く
-    with st.modal(f"📊 {selected_ticker} のチャート"):
+    # チャートを `expander` で表示（簡易的なポップアップ）
+    with st.expander(f"📊 {selected_ticker} のチャート", expanded=True):
         tradingview_url = f"https://jp.tradingview.com/chart/?symbol=NASDAQ%3A{selected_ticker}"
         st.markdown(f'<iframe src="{tradingview_url}" width="700" height="500"></iframe>', unsafe_allow_html=True)
 
