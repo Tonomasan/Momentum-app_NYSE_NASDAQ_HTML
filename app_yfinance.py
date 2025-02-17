@@ -3,8 +3,8 @@ import pandas as pd
 import plotly.express as px
 import yfinance as yf
 import matplotlib.pyplot as plt
-from momentum_calculator import main
-from momentum_calculator import get_stock_details
+from Momentum_NYSE_NASDAQ.momentum_calculator_yfinance import main
+from Momentum_NYSE_NASDAQ.momentum_calculator_yfinance import get_stock_details
 
 # タイトル
 st.title("📈 米国株モメンタム検索アプリ")

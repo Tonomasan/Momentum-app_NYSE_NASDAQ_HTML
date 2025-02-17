@@ -51,7 +51,29 @@ filtered_df = df[
 
 # フィルタ後のデータを表示
 st.write("🔢 フィルタ後のデータ件数:", len(filtered_df))
-st.write("📌 フィルタ後のデータ:", filtered_df)
+#st.write("📌 フィルタ後のデータ:", filtered_df)
+#st.write(filtered_df)
+
+# DataFrameを編集可能なデータテーブルとして表示
+selected_rows = st.data_editor(
+    df,
+    column_config={
+        "Ticker": st.column_config.TextColumn("Ticker"),
+    },
+    use_container_width=True,
+    hide_index=True
+)
+
+# ユーザーが行をクリックしたかチェック
+if selected_rows is not None and len(selected_rows) > 0:
+    selected_ticker = selected_rows["Ticker"].iloc[0]  # 最初の選択された Ticker を取得
+    tradingview_url = f"https://jp.tradingview.com/chart/?symbol=NASDAQ%3A{selected_ticker}"
+    
+    # TradingView のリンクを表示
+    st.markdown(
+        f'<a href="{tradingview_url}" target="_blank" style="font-size:20px; color:blue; text-decoration:underline;">📈 {selected_ticker} のチャートを見る</a>',
+        unsafe_allow_html=True
+    )
 
 if filtered_df.empty:
     st.warning("⚠ フィルタ結果が空です。条件を緩めてください。")
