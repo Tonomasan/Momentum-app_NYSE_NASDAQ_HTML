@@ -4,6 +4,7 @@ import time
 import requests
 import datetime
 import yfinance as yf
+import os
 from pandas_datareader import data as pdr
 
 # 📌 NYSE & NASDAQ 銘柄リストの GitHub URL
@@ -139,9 +140,15 @@ def main():
 
         time.sleep(1)  # 🔹 API制限を避けるために1秒待機
     
+    # 現在のスクリプトのディレクトリを取得
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+
+    # 保存するCSVファイルのパスを作成
+    csv_path = os.path.join(script_dir, "momentum_data.csv")
     # 📁 CSVに保存
     df_momentum = pd.DataFrame(results)
-    df_momentum.to_csv("momentum_data.csv", index=False)
+    #df_momentum.to_csv("momentum_data.csv", index=False)
+    df_momentum.to_csv(csv_path, index=False)
 
     #app.pyでyfinanceを使う場合Ticker末尾".US"を削除する
     # CSVファイルを読み込む
@@ -149,7 +156,9 @@ def main():
     # Ticker列の末尾に '.US' が含まれている行の '.US' を除去
     df['Ticker'] = df['Ticker'].str.replace(r'\.US$', '', regex=True)
     # 新しいCSVとして保存
-    df.to_csv('momentum_data_yf.csv', index=False)
+    csv_path_yf = os.path.join(script_dir, "momentum_data_yf.csv")
+    # df.to_csv('momentum_data_yf.csv', index=False)
+    df.to_csv(csv_path, index=False)
 
     print("✅ モメンタムデータ保存完了: momentum_data.csv, momentum_data_yf.csv")
 
