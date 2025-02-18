@@ -51,6 +51,13 @@
     <h1>📈 米国株モメンタム検索</h1>
     <label>1ヶ月モメンタム最小値: <input type="number" id="min-1m" value="-10"></label>
     <label>最大値: <input type="number" id="max-1m" value="30"></label>
+    <br>
+    <label>3ヶ月モメンタム最小値: <input type="number" id="min-3m" value="-10"></label>
+    <label>最大値: <input type="number" id="max-3m" value="30"></label>
+    <br>
+    <label>6ヶ月モメンタム最小値: <input type="number" id="min-6m" value="-10"></label>
+    <label>最大値: <input type="number" id="max-6m" value="30"></label>
+    <br>
     <button id="filter-btn">フィルター適用</button>
     <button id="download-btn">📥 データをダウンロード</button>
     
@@ -109,10 +116,18 @@
             document.getElementById("filter-btn").addEventListener("click", function() {
                 const min1m = parseFloat(document.getElementById("min-1m").value);
                 const max1m = parseFloat(document.getElementById("max-1m").value);
+                const min3m = parseFloat(document.getElementById("min-3m").value);
+                const max3m = parseFloat(document.getElementById("max-3m").value);
+                const min6m = parseFloat(document.getElementById("min-6m").value);
+                const max6m = parseFloat(document.getElementById("max-6m").value);
                 
                 const filteredData = data.filter(row => {
                     const val1m = parseFloat(row["1m"]);
-                    return val1m >= min1m && val1m <= max1m;
+                    const val3m = parseFloat(row["3m"]);
+                    const val6m = parseFloat(row["6m"]);
+                    return val1m >= min1m && val1m <= max1m &&
+                           val3m >= min3m && val3m <= max3m &&
+                           val6m >= min6m && val6m <= max6m;
                 });
                 updateTable(filteredData);
             });
@@ -125,17 +140,6 @@
             closeBtn.addEventListener("click", function() {
                 modal.style.display = "none";
                 iframe.src = "";
-            });
-    
-            downloadBtn.addEventListener("click", function() {
-                const csvContent = "Ticker,1m,3m,6m\n" + data.map(row => `${row.Ticker},${row["1m"]},${row["3m"]},${row["6m"]}`).join("\n");
-                const blob = new Blob([csvContent], { type: "text/csv" });
-                const link = document.createElement("a");
-                link.href = URL.createObjectURL(blob);
-                link.download = "filtered_momentum_data.csv";
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
             });
         });
     </script>
