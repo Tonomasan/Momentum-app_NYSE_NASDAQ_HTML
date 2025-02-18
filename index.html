@@ -1,161 +1,3 @@
-<!-- <!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>米国株モメンタム検索</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-        }
-        th {
-            background-color: #f4f4f4;
-        }
-        .modal {
-            display: none;
-            position: fixed;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.5);
-            justify-content: center;
-            align-items: center;
-        }
-        .modal-content {
-            background: #fff;
-            padding: 20px;
-            border-radius: 5px;
-            position: relative;
-        }
-        .close {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            cursor: pointer;
-            font-size: 20px;
-        }
-    </style>
-</head>
-<body>
-    <h1>📈 米国株モメンタム検索</h1>
-    <label>1ヶ月モメンタム: </label>
-    <input type="range" id="slider-1m" min="-50" max="100" step="1" value="0">
-    <span id="value-1m">0</span>
-    <br>
-    <label>3ヶ月モメンタム: </label>
-    <input type="range" id="slider-3m" min="-50" max="100" step="1" value="0">
-    <span id="value-3m">0</span>
-    <br>
-    <label>6ヶ月モメンタム: </label>
-    <input type="range" id="slider-6m" min="-50" max="100" step="1" value="0">
-    <span id="value-6m">0</span>
-    <br>
-    
-    <button id="download-btn">📥 データをダウンロード</button>
-    
-    <table>
-        <thead>
-            <tr>
-                <th>Ticker</th>
-                <th>1ヶ月モメンタム</th>
-                <th>3ヶ月モメンタム</th>
-                <th>6ヶ月モメンタム</th>
-            </tr>
-        </thead>
-        <tbody id="stock-table-body"></tbody>
-    </table>
-
-    <div id="chart-modal" class="modal">
-        <div class="modal-content">
-            <span id="close-btn" class="close">&times;</span>
-            <iframe id="chart-frame" width="100%" height="600"></iframe>
-        </div>
-    </div>
-
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            let data = [];
-            const tableBody = document.getElementById("stock-table-body");
-            const modal = document.getElementById("chart-modal");
-            const iframe = document.getElementById("chart-frame");
-            const closeBtn = document.getElementById("close-btn");
-            const sliders = {
-                "1m": document.getElementById("slider-1m"),
-                "3m": document.getElementById("slider-3m"),
-                "6m": document.getElementById("slider-6m")
-            };
-            const values = {
-                "1m": document.getElementById("value-1m"),
-                "3m": document.getElementById("value-3m"),
-                "6m": document.getElementById("value-6m")
-            };
-
-            fetch("momentum_data_yf.csv")
-                .then(response => response.text())
-                .then(csvText => {
-                    data = csvToArray(csvText);
-                    updateTable(data);
-                });
-
-            function csvToArray(csvText) {
-                const rows = csvText.split("\n").map(row => row.split(","));
-                const headers = rows[0];
-                return rows.slice(1).map(row => Object.fromEntries(row.map((val, i) => [headers[i], val])));
-            }
-
-            function updateTable(filteredData) {
-                tableBody.innerHTML = "";
-                filteredData.forEach(row => {
-                    const tr = document.createElement("tr");
-                    tr.dataset.ticker = row.Ticker;
-                    tr.innerHTML = `<td>${row.Ticker}</td><td>${row["1m"]}</td><td>${row["3m"]}</td><td>${row["6m"]}</td>`;
-                    tr.addEventListener("click", () => showChart(row.Ticker));
-                    tableBody.appendChild(tr);
-                });
-            }
-
-            function filterData() {
-                const filteredData = data.filter(row => {
-                    return Object.keys(sliders).every(period => {
-                        const val = parseFloat(row[period]);
-                        return val >= parseFloat(sliders[period].value) - 25 && val <= parseFloat(sliders[period].value) + 25;
-                    });
-                });
-                updateTable(filteredData);
-            }
-
-            Object.keys(sliders).forEach(period => {
-                sliders[period].addEventListener("input", function() {
-                    values[period].textContent = sliders[period].value;
-                    filterData();
-                });
-            });
-
-            function showChart(ticker) {
-                iframe.src = `https://www.tradingview.com/chart/?symbol=NASDAQ%3A${ticker}`;
-                modal.style.display = "flex";
-            }
-
-            closeBtn.addEventListener("click", function() {
-                modal.style.display = "none";
-                iframe.src = "";
-            });
-        });
-    </script>
-</body>
-</html> -->
-
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -179,14 +21,37 @@
         th {
             background-color: #f4f4f4;
         }
+        .slider-container {
+            margin-bottom: 20px;
+        }
     </style>
 </head>
 <body>
     <h1>📈 米国株モメンタム検索</h1>
-    <label>1ヶ月モメンタム範囲: </label>
-    <input type="range" id="slider-1m" min="-50" max="100" step="1" value="0">
-    <span id="min-value-1m">-50</span> ~ <span id="max-value-1m">100</span>
-    <br>
+    
+    <div class="slider-container">
+        <label>1ヶ月モメンタム範囲: </label>
+        <input type="range" id="min-slider-1m" min="-50" max="100" step="1" value="-10">
+        <span id="min-value-1m">-10</span> ~ 
+        <input type="range" id="max-slider-1m" min="-50" max="100" step="1" value="30">
+        <span id="max-value-1m">30</span>
+    </div>
+    
+    <div class="slider-container">
+        <label>3ヶ月モメンタム範囲: </label>
+        <input type="range" id="min-slider-3m" min="-50" max="100" step="1" value="-10">
+        <span id="min-value-3m">-10</span> ~ 
+        <input type="range" id="max-slider-3m" min="-50" max="100" step="1" value="30">
+        <span id="max-value-3m">30</span>
+    </div>
+    
+    <div class="slider-container">
+        <label>6ヶ月モメンタム範囲: </label>
+        <input type="range" id="min-slider-6m" min="-50" max="100" step="1" value="-10">
+        <span id="min-value-6m">-10</span> ~ 
+        <input type="range" id="max-slider-6m" min="-50" max="100" step="1" value="30">
+        <span id="max-value-6m">30</span>
+    </div>
     
     <button id="download-btn">📥 データをダウンロード</button>
     
@@ -206,9 +71,6 @@
         document.addEventListener("DOMContentLoaded", function() {
             let data = [];
             const tableBody = document.getElementById("stock-table-body");
-            const slider1m = document.getElementById("slider-1m");
-            const minValue1m = document.getElementById("min-value-1m");
-            const maxValue1m = document.getElementById("max-value-1m");
 
             fetch("momentum_data_yf.csv")
                 .then(response => response.text())
@@ -233,19 +95,42 @@
                 });
             }
 
-            slider1m.addEventListener("input", function() {
-                const range = parseFloat(slider1m.value);
-                minValue1m.textContent = range - 25;
-                maxValue1m.textContent = range + 25;
-                filterData();
-            });
+            function setupSlider(minSliderId, maxSliderId, minValueId, maxValueId, column) {
+                const minSlider = document.getElementById(minSliderId);
+                const maxSlider = document.getElementById(maxSliderId);
+                const minValue = document.getElementById(minValueId);
+                const maxValue = document.getElementById(maxValueId);
+                
+                function updateValues() {
+                    if (parseFloat(minSlider.value) > parseFloat(maxSlider.value)) {
+                        minSlider.value = maxSlider.value;
+                    }
+                    minValue.textContent = minSlider.value;
+                    maxValue.textContent = maxSlider.value;
+                    filterData();
+                }
+
+                minSlider.addEventListener("input", updateValues);
+                maxSlider.addEventListener("input", updateValues);
+            }
+
+            setupSlider("min-slider-1m", "max-slider-1m", "min-value-1m", "max-value-1m", "1m");
+            setupSlider("min-slider-3m", "max-slider-3m", "min-value-3m", "max-value-3m", "3m");
+            setupSlider("min-slider-6m", "max-slider-6m", "min-value-6m", "max-value-6m", "6m");
 
             function filterData() {
-                const min = parseFloat(minValue1m.textContent);
-                const max = parseFloat(maxValue1m.textContent);
+                const min1m = parseFloat(document.getElementById("min-slider-1m").value);
+                const max1m = parseFloat(document.getElementById("max-slider-1m").value);
+                const min3m = parseFloat(document.getElementById("min-slider-3m").value);
+                const max3m = parseFloat(document.getElementById("max-slider-3m").value);
+                const min6m = parseFloat(document.getElementById("min-slider-6m").value);
+                const max6m = parseFloat(document.getElementById("max-slider-6m").value);
+
                 const filteredData = data.filter(row => {
-                    const val = parseFloat(row["1m"]);
-                    return val >= min && val <= max;
+                    const val1m = parseFloat(row["1m"]);
+                    const val3m = parseFloat(row["3m"]);
+                    const val6m = parseFloat(row["6m"]);
+                    return val1m >= min1m && val1m <= max1m && val3m >= min3m && val3m <= max3m && val6m >= min6m && val6m <= max6m;
                 });
                 updateTable(filteredData);
             }
@@ -253,4 +138,3 @@
     </script>
 </body>
 </html>
-
