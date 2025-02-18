@@ -49,14 +49,17 @@
 </head>
 <body>
     <h1>📈 米国株モメンタム検索</h1>
-    <label>1ヶ月モメンタム最小値: <input type="number" id="min-1m" value="-10"></label>
-    <label>最大値: <input type="number" id="max-1m" value="30"></label>
+    <label>1ヶ月モメンタム: </label>
+    <input type="range" id="slider-1m" min="-50" max="100" step="1" value="0">
+    <span id="value-1m">0</span>
     <br>
-    <label>3ヶ月モメンタム最小値: <input type="number" id="min-3m" value="-10"></label>
-    <label>最大値: <input type="number" id="max-3m" value="30"></label>
+    <label>3ヶ月モメンタム: </label>
+    <input type="range" id="slider-3m" min="-50" max="100" step="1" value="0">
+    <span id="value-3m">0</span>
     <br>
-    <label>6ヶ月モメンタム最小値: <input type="number" id="min-6m" value="-10"></label>
-    <label>最大値: <input type="number" id="max-6m" value="30"></label>
+    <label>6ヶ月モメンタム: </label>
+    <input type="range" id="slider-6m" min="-50" max="100" step="1" value="0">
+    <span id="value-6m">0</span>
     <br>
     <button id="filter-btn">フィルター適用</button>
     <button id="download-btn">📥 データをダウンロード</button>
@@ -84,24 +87,33 @@
         document.addEventListener("DOMContentLoaded", function() {
             let data = [];
             const tableBody = document.getElementById("stock-table-body");
-            const downloadBtn = document.getElementById("download-btn");
             const modal = document.getElementById("chart-modal");
             const iframe = document.getElementById("chart-frame");
             const closeBtn = document.getElementById("close-btn");
-    
+            const sliders = {
+                "1m": document.getElementById("slider-1m"),
+                "3m": document.getElementById("slider-3m"),
+                "6m": document.getElementById("slider-6m")
+            };
+            const values = {
+                "1m": document.getElementById("value-1m"),
+                "3m": document.getElementById("value-3m"),
+                "6m": document.getElementById("value-6m")
+            };
+
             fetch("momentum_data_yf.csv")
                 .then(response => response.text())
                 .then(csvText => {
                     data = csvToArray(csvText);
                     updateTable(data);
                 });
-    
+
             function csvToArray(csvText) {
                 const rows = csvText.split("\n").map(row => row.split(","));
                 const headers = rows[0];
                 return rows.slice(1).map(row => Object.fromEntries(row.map((val, i) => [headers[i], val])));
             }
-    
+
             function updateTable(filteredData) {
                 tableBody.innerHTML = "";
                 filteredData.forEach(row => {
@@ -112,31 +124,28 @@
                     tableBody.appendChild(tr);
                 });
             }
-    
+
             document.getElementById("filter-btn").addEventListener("click", function() {
-                const min1m = parseFloat(document.getElementById("min-1m").value);
-                const max1m = parseFloat(document.getElementById("max-1m").value);
-                const min3m = parseFloat(document.getElementById("min-3m").value);
-                const max3m = parseFloat(document.getElementById("max-3m").value);
-                const min6m = parseFloat(document.getElementById("min-6m").value);
-                const max6m = parseFloat(document.getElementById("max-6m").value);
-                
                 const filteredData = data.filter(row => {
-                    const val1m = parseFloat(row["1m"]);
-                    const val3m = parseFloat(row["3m"]);
-                    const val6m = parseFloat(row["6m"]);
-                    return val1m >= min1m && val1m <= max1m &&
-                           val3m >= min3m && val3m <= max3m &&
-                           val6m >= min6m && val6m <= max6m;
+                    return Object.keys(sliders).every(period => {
+                        const val = parseFloat(row[period]);
+                        return val >= parseFloat(sliders[period].value);
+                    });
                 });
                 updateTable(filteredData);
             });
-    
+
+            Object.keys(sliders).forEach(period => {
+                sliders[period].addEventListener("input", function() {
+                    values[period].textContent = sliders[period].value;
+                });
+            });
+
             function showChart(ticker) {
                 iframe.src = `https://www.tradingview.com/chart/?symbol=NASDAQ%3A${ticker}`;
                 modal.style.display = "flex";
             }
-    
+
             closeBtn.addEventListener("click", function() {
                 modal.style.display = "none";
                 iframe.src = "";
