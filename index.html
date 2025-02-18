@@ -31,26 +31,23 @@
     
     <div class="slider-container">
         <label>1ヶ月モメンタム範囲: </label>
-        <input type="range" id="min-slider-1m" min="-50" max="100" step="1" value="-10">
-        <span id="min-value-1m">-10</span> ~ 
-        <input type="range" id="max-slider-1m" min="-50" max="100" step="1" value="30">
-        <span id="max-value-1m">30</span>
+        <input type="range" id="slider-1m-min" min="-50" max="100" step="1" value="-10">
+        <input type="range" id="slider-1m-max" min="-50" max="100" step="1" value="30">
+        <span id="range-1m">-10 ~ 30</span>
     </div>
     
     <div class="slider-container">
         <label>3ヶ月モメンタム範囲: </label>
-        <input type="range" id="min-slider-3m" min="-50" max="100" step="1" value="-10">
-        <span id="min-value-3m">-10</span> ~ 
-        <input type="range" id="max-slider-3m" min="-50" max="100" step="1" value="30">
-        <span id="max-value-3m">30</span>
+        <input type="range" id="slider-3m-min" min="-50" max="100" step="1" value="-10">
+        <input type="range" id="slider-3m-max" min="-50" max="100" step="1" value="30">
+        <span id="range-3m">-10 ~ 30</span>
     </div>
     
     <div class="slider-container">
         <label>6ヶ月モメンタム範囲: </label>
-        <input type="range" id="min-slider-6m" min="-50" max="100" step="1" value="-10">
-        <span id="min-value-6m">-10</span> ~ 
-        <input type="range" id="max-slider-6m" min="-50" max="100" step="1" value="30">
-        <span id="max-value-6m">30</span>
+        <input type="range" id="slider-6m-min" min="-50" max="100" step="1" value="-10">
+        <input type="range" id="slider-6m-max" min="-50" max="100" step="1" value="30">
+        <span id="range-6m">-10 ~ 30</span>
     </div>
     
     <button id="download-btn">📥 データをダウンロード</button>
@@ -95,36 +92,38 @@
                 });
             }
 
-            function setupSlider(minSliderId, maxSliderId, minValueId, maxValueId, column) {
+            function setupRangeSliders(minSliderId, maxSliderId, rangeId, column) {
                 const minSlider = document.getElementById(minSliderId);
                 const maxSlider = document.getElementById(maxSliderId);
-                const minValue = document.getElementById(minValueId);
-                const maxValue = document.getElementById(maxValueId);
-                
-                function updateValues() {
-                    if (parseFloat(minSlider.value) > parseFloat(maxSlider.value)) {
-                        minSlider.value = maxSlider.value;
+                const rangeDisplay = document.getElementById(rangeId);
+
+                function updateRange() {
+                    let min = parseFloat(minSlider.value);
+                    let max = parseFloat(maxSlider.value);
+                    if (min > max) {
+                        [min, max] = [max, min];
+                        minSlider.value = min;
+                        maxSlider.value = max;
                     }
-                    minValue.textContent = minSlider.value;
-                    maxValue.textContent = maxSlider.value;
+                    rangeDisplay.textContent = `${min} ~ ${max}`;
                     filterData();
                 }
 
-                minSlider.addEventListener("input", updateValues);
-                maxSlider.addEventListener("input", updateValues);
+                minSlider.addEventListener("input", updateRange);
+                maxSlider.addEventListener("input", updateRange);
             }
 
-            setupSlider("min-slider-1m", "max-slider-1m", "min-value-1m", "max-value-1m", "1m");
-            setupSlider("min-slider-3m", "max-slider-3m", "min-value-3m", "max-value-3m", "3m");
-            setupSlider("min-slider-6m", "max-slider-6m", "min-value-6m", "max-value-6m", "6m");
+            setupRangeSliders("slider-1m-min", "slider-1m-max", "range-1m", "1m");
+            setupRangeSliders("slider-3m-min", "slider-3m-max", "range-3m", "3m");
+            setupRangeSliders("slider-6m-min", "slider-6m-max", "range-6m", "6m");
 
             function filterData() {
-                const min1m = parseFloat(document.getElementById("min-slider-1m").value);
-                const max1m = parseFloat(document.getElementById("max-slider-1m").value);
-                const min3m = parseFloat(document.getElementById("min-slider-3m").value);
-                const max3m = parseFloat(document.getElementById("max-slider-3m").value);
-                const min6m = parseFloat(document.getElementById("min-slider-6m").value);
-                const max6m = parseFloat(document.getElementById("max-slider-6m").value);
+                const min1m = parseFloat(document.getElementById("slider-1m-min").value);
+                const max1m = parseFloat(document.getElementById("slider-1m-max").value);
+                const min3m = parseFloat(document.getElementById("slider-3m-min").value);
+                const max3m = parseFloat(document.getElementById("slider-3m-max").value);
+                const min6m = parseFloat(document.getElementById("slider-6m-min").value);
+                const max6m = parseFloat(document.getElementById("slider-6m-max").value);
 
                 const filteredData = data.filter(row => {
                     const val1m = parseFloat(row["1m"]);
