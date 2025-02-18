@@ -50,18 +50,27 @@
 <body>
     <h1>📈 米国株モメンタム検索</h1>
     <label>1ヶ月モメンタム: </label>
-    <input type="range" id="slider-1m" min="-50" max="100" step="1" value="0">
-    <span id="value-1m">0</span>
+    <input type="range" id="slider-1m-min" min="-50" max="100" step="1" value="-50">
+    <span id="value-1m-min">-50</span>
+    ～
+    <input type="range" id="slider-1m-max" min="-50" max="100" step="1" value="100">
+    <span id="value-1m-max">100</span>
     <br>
     <label>3ヶ月モメンタム: </label>
-    <input type="range" id="slider-3m" min="-50" max="100" step="1" value="0">
-    <span id="value-3m">0</span>
+    <input type="range" id="slider-3m-min" min="-50" max="100" step="1" value="-50">
+    <span id="value-3m-min">-50</span>
+    ～
+    <input type="range" id="slider-3m-max" min="-50" max="100" step="1" value="100">
+    <span id="value-3m-max">100</span>
     <br>
     <label>6ヶ月モメンタム: </label>
-    <input type="range" id="slider-6m" min="-50" max="100" step="1" value="0">
-    <span id="value-6m">0</span>
+    <input type="range" id="slider-6m-min" min="-50" max="100" step="1" value="-50">
+    <span id="value-6m-min">-50</span>
+    ～
+    <input type="range" id="slider-6m-max" min="-50" max="100" step="1" value="100">
+    <span id="value-6m-max">100</span>
     <br>
-    <button id="filter-btn">フィルター適用</button>
+    
     <button id="download-btn">📥 データをダウンロード</button>
     
     <table>
@@ -91,14 +100,14 @@
             const iframe = document.getElementById("chart-frame");
             const closeBtn = document.getElementById("close-btn");
             const sliders = {
-                "1m": document.getElementById("slider-1m"),
-                "3m": document.getElementById("slider-3m"),
-                "6m": document.getElementById("slider-6m")
+                "1m": { min: document.getElementById("slider-1m-min"), max: document.getElementById("slider-1m-max") },
+                "3m": { min: document.getElementById("slider-3m-min"), max: document.getElementById("slider-3m-max") },
+                "6m": { min: document.getElementById("slider-6m-min"), max: document.getElementById("slider-6m-max") }
             };
             const values = {
-                "1m": document.getElementById("value-1m"),
-                "3m": document.getElementById("value-3m"),
-                "6m": document.getElementById("value-6m")
+                "1m": { min: document.getElementById("value-1m-min"), max: document.getElementById("value-1m-max") },
+                "3m": { min: document.getElementById("value-3m-min"), max: document.getElementById("value-3m-max") },
+                "6m": { min: document.getElementById("value-6m-min"), max: document.getElementById("value-6m-max") }
             };
 
             fetch("momentum_data_yf.csv")
@@ -125,20 +134,19 @@
                 });
             }
 
-            document.getElementById("filter-btn").addEventListener("click", function() {
+            function filterData() {
                 const filteredData = data.filter(row => {
                     return Object.keys(sliders).every(period => {
                         const val = parseFloat(row[period]);
-                        return val >= parseFloat(sliders[period].value);
+                        return val >= parseFloat(sliders[period].min.value) && val <= parseFloat(sliders[period].max.value);
                     });
                 });
                 updateTable(filteredData);
-            });
+            }
 
             Object.keys(sliders).forEach(period => {
-                sliders[period].addEventListener("input", function() {
-                    values[period].textContent = sliders[period].value;
-                });
+                sliders[period].min.addEventListener("input", filterData);
+                sliders[period].max.addEventListener("input", filterData);
             });
 
             function showChart(ticker) {
