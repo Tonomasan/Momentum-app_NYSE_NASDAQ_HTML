@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>米国株モメンタム検索</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f4f4f4;
+        }
+        .slider-container {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>📈 米国株モメンタム検索</h1>
+    
+    <div class="slider-container">
+        <label>1ヶ月モメンタム範囲: </label>
+        <input type="range" id="slider-1m-min" min="-50" max="100" step="1" value="-10">
+        <input type="range" id="slider-1m-max" min="-50" max="100" step="1" value="30">
+        <span id="range-1m">-10 ~ 30</span>
+    </div>
+    
+    <div class="slider-container">
+        <label>3ヶ月モメンタム範囲: </label>
+        <input type="range" id="slider-3m-min" min="-50" max="100" step="1" value="-10">
+        <input type="range" id="slider-3m-max" min="-50" max="100" step="1" value="30">
+        <span id="range-3m">-10 ~ 30</span>
+    </div>
+    
+    <div class="slider-container">
+        <label>6ヶ月モメンタム範囲: </label>
+        <input type="range" id="slider-6m-min" min="-50" max="100" step="1" value="-10">
+        <input type="range" id="slider-6m-max" min="-50" max="100" step="1" value="30">
+        <span id="range-6m">-10 ~ 30</span>
+    </div>
+    
+    <button id="download-btn">📥 データをダウンロード</button>
+    
+    <!-- <table>
+        <thead>
+            <tr>
+                <th>Ticker</th>
+                <th>1ヶ月モメンタム</th>
+                <th>3ヶ月モメンタム</th>
+                <th>6ヶ月モメンタム</th>
+            </tr>
+        </thead>
+        <tbody id="stock-table-body"></tbody>
+    </table> -->
+
+    <style>
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+        }
+        .popup {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            position: relative;
+        }
+        .popup-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        .close {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 20px;
+            cursor: pointer;
+        }
+    </style>
+    <div>※行をクリックするとその銘柄のチャートをポップアップで開きます。</div>
+    <table>
+        <thead>
+            <tr>
+                <th>Ticker</th>
+                <th>1ヶ月モメンタム</th>
+                <th>3ヶ月モメンタム</th>
+                <th>6ヶ月モメンタム</th>
+            </tr>
+        </thead>
+        <tbody id="stock-table-body"></tbody>
+    </table>
+    <div id="popup-chart" class="overlay">
+        <div class="popup-bg" onclick="closePopup()"></div>
+        <div class="popup">
+            <h2 id="chart_symbol">SYMBOL</h2>
+            <a class="close" href="javascript:void(0);" onclick="closePopup()">&times;</a>
+            <div id="chart"></div>
+        </div>
+    </div>
+    <script src="https://unpkg.com/tabulator-tables@4.9.1/dist/js/tabulator.min.js"></script>
+    <script src="https://s3.tradingview.com/tv.js"></script>
+    
+    <script>
+        function openPopup(symbol) {
+            document.getElementById("chart_symbol").innerText = symbol;
+            document.getElementById("popup-chart").style.display = "flex";
+            document.getElementById("chart").innerHTML = ""; // リセットして新しいウィジェットを追加
+            
+            let tradingSymbol = symbol.includes(":") ? symbol : "NASDAQ:" + symbol;
+            
+            new TradingView.widget({
+                "container_id": "chart",
+                "width": "100%",
+                "height": "400",
+                "symbol": tradingSymbol,
+                "interval": "D",
+                "theme": "light",
+                "style": "1",
+                "locale": "en",
+                "toolbar_bg": "#f1f3f6",
+                "enable_publishing": false,
+                "hide_side_toolbar": false,
+                "allow_symbol_change": true,
+                "save_image": false
+            });
+        }
+    
+        function closePopup() {
+            document.getElementById("popup-chart").style.display = "none";
+        }
+    
+        document.addEventListener("DOMContentLoaded", function() {
+            const tableBody = document.getElementById("stock-table-body");
+            
+            // デモデータを追加
+            const stocks = [
+                { ticker: "AAPL", momentum1m: 10, momentum3m: 20, momentum6m: 30 },
+                { ticker: "MSFT", momentum1m: 15, momentum3m: 25, momentum6m: 35 },
+                { ticker: "GOOGL", momentum1m: 5, momentum3m: 15, momentum6m: 25 }
+            ];
+    
+            stocks.forEach(stock => {
+                const row = document.createElement("tr");
+                row.dataset.ticker = stock.ticker;
+                row.innerHTML = `
+                    <td>${stock.ticker}</td>
+                    <td>${stock.momentum1m}</td>
+                    <td>${stock.momentum3m}</td>
+                    <td>${stock.momentum6m}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+    
+            tableBody.addEventListener("click", function(event) {
+                const target = event.target.closest("tr"); // クリックされた要素の親<tr>を取得
+                if (target && target.dataset.ticker) {
+                    openPopup(target.dataset.ticker);
+                }
+            });
+        });
+    </script>
+    
+</body>
+</html>
+
+
+
+    <!-- <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            let data = [];
+            const tableBody = document.getElementById("stock-table-body");
+
+            fetch("momentum_data_yf.csv")
+                .then(response => response.text())
+                .then(csvText => {
+                    data = csvToArray(csvText);
+                    updateTable(data);
+                });
+
+            function csvToArray(csvText) {
+                const rows = csvText.split("\n").map(row => row.split(","));
+                const headers = rows[0];
+                return rows.slice(1).map(row => Object.fromEntries(row.map((val, i) => [headers[i], val])));
+            }
+
+            function updateTable(filteredData) {
+                tableBody.innerHTML = "";
+                filteredData.forEach(row => {
+                    const tr = document.createElement("tr");
+                    tr.dataset.ticker = row.Ticker;
+                    tr.innerHTML = `<td><a href="https://www.tradingview.com/chart/?symbol=NASDAQ%3A${row.Ticker}" target="_blank">${row.Ticker}</a></td><td>${row["1m"]}</td><td>${row["3m"]}</td><td>${row["6m"]}</td>`;
+                    tableBody.appendChild(tr);
+                });
+            }
+
+            function setupRangeSliders(minSliderId, maxSliderId, rangeId, column) {
+                const minSlider = document.getElementById(minSliderId);
+                const maxSlider = document.getElementById(maxSliderId);
+                const rangeDisplay = document.getElementById(rangeId);
+
+                function updateRange() {
+                    let min = parseFloat(minSlider.value);
+                    let max = parseFloat(maxSlider.value);
+                    if (min > max) {
+                        [min, max] = [max, min];
+                        minSlider.value = min;
+                        maxSlider.value = max;
+                    }
+                    rangeDisplay.textContent = `${min} ~ ${max}`;
+                    filterData();
+                }
+
+                minSlider.addEventListener("input", updateRange);
+                maxSlider.addEventListener("input", updateRange);
+            }
+
+            setupRangeSliders("slider-1m-min", "slider-1m-max", "range-1m", "1m");
+            setupRangeSliders("slider-3m-min", "slider-3m-max", "range-3m", "3m");
+            setupRangeSliders("slider-6m-min", "slider-6m-max", "range-6m", "6m");
+
+            function filterData() {
+                const min1m = parseFloat(document.getElementById("slider-1m-min").value);
+                const max1m = parseFloat(document.getElementById("slider-1m-max").value);
+                const min3m = parseFloat(document.getElementById("slider-3m-min").value);
+                const max3m = parseFloat(document.getElementById("slider-3m-max").value);
+                const min6m = parseFloat(document.getElementById("slider-6m-min").value);
+                const max6m = parseFloat(document.getElementById("slider-6m-max").value);
+
+                const filteredData = data.filter(row => {
+                    const val1m = parseFloat(row["1m"]);
+                    const val3m = parseFloat(row["3m"]);
+                    const val6m = parseFloat(row["6m"]);
+                    return val1m >= min1m && val1m <= max1m && val3m >= min3m && val3m <= max3m && val6m >= min6m && val6m <= max6m;
+                });
+                updateTable(filteredData);
+            }
+        });
+    </script> -->
+
+<!-- 
+<div>※行をクリックするとその銘柄のチャートをポップアップで開きます。</div>
+<div id="popup-chart" class="overlay">
+    <div class="popup-bg" onclick="closePopup()"></div>
+    <div class="popup">
+        <h2 id="chart_symbol">SYMBOL</h2>
+        <a class="close" href="javascript:void(0);" onclick="closePopup()">&times;</a>
+        <div id="chart"></div>
+    </div>
+</div>
+<script src="https://unpkg.com/tabulator-tables@4.9.1/dist/js/tabulator.min.js"></script>
+<script src="https://s3.tradingview.com/tv.js"></script>
+
+<script>
+    function openPopup(symbol) {
+        document.getElementById("chart_symbol").innerText = symbol;
+        document.getElementById("popup-chart").style.display = "block";
+        new TradingView.widget({
+            "container_id": "chart",
+            "width": "100%",
+            "height": "400",
+            "symbol": "NASDAQ:" + symbol,
+            "interval": "D",
+            "theme": "light",
+            "style": "1",
+            "locale": "en",
+            "toolbar_bg": "#f1f3f6",
+            "enable_publishing": false,
+            "hide_side_toolbar": false,
+            "allow_symbol_change": true,
+            "save_image": false
+        });
+    }
+
+    function closePopup() {
+        document.getElementById("popup-chart").style.display = "none";
+    }
+</script> -->
