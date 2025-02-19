@@ -64,7 +64,73 @@
         <tbody id="stock-table-body"></tbody>
     </table>
 
+    <div>※行をクリックするとその銘柄のチャートをポップアップで開きます。</div>
+
+    <!-- スライダーのUI -->
+    <div>
+        <label>1か月モメンタム:</label>
+        <input type="range" id="momentum1m" min="-50" max="100" step="1" value="0" oninput="updateFilter()">
+        <span id="momentum1m-value">0</span>
+    </div>
+    <div>
+        <label>3か月モメンタム:</label>
+        <input type="range" id="momentum3m" min="-50" max="100" step="1" value="0" oninput="updateFilter()">
+        <span id="momentum3m-value">0</span>
+    </div>
+    <div>
+        <label>6か月モメンタム:</label>
+        <input type="range" id="momentum6m" min="-50" max="100" step="1" value="0" oninput="updateFilter()">
+        <span id="momentum6m-value">0</span>
+    </div>
+
+    <!-- ポップアップ -->
+    <div id="popup-chart" class="overlay">
+        <div class="popup-bg" onclick="closePopup()"></div>
+        <div class="popup">
+            <h2 id="chart_symbol">SYMBOL</h2>
+            <a class="close" href="javascript:void(0);" onclick="closePopup()">&times;</a>
+            <div id="chart"></div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/tabulator-tables@4.9.1/dist/js/tabulator.min.js"></script>
+    <script src="https://s3.tradingview.com/tv.js"></script>
+
     <script>
+        function openPopup(symbol) {
+            document.getElementById("chart_symbol").innerText = symbol;
+            document.getElementById("popup-chart").style.display = "block";
+            new TradingView.widget({
+                "container_id": "chart",
+                "width": "100%",
+                "height": "400",
+                "symbol": "NASDAQ:" + symbol,
+                "interval": "D",
+                "theme": "light",
+                "style": "1",
+                "locale": "en",
+                "toolbar_bg": "#f1f3f6",
+                "enable_publishing": false,
+                "hide_side_toolbar": false,
+                "allow_symbol_change": true,
+                "save_image": false
+            });
+        }
+
+        function closePopup() {
+            document.getElementById("popup-chart").style.display = "none";
+        }
+
+        function updateFilter() {
+            document.getElementById("momentum1m-value").innerText = document.getElementById("momentum1m").value;
+            document.getElementById("momentum3m-value").innerText = document.getElementById("momentum3m").value;
+            document.getElementById("momentum6m-value").innerText = document.getElementById("momentum6m").value;
+            
+            // フィルタリングロジックをここに追加（例：表示データを更新する）
+        }
+        </script>
+
+    <!-- <script>
         document.addEventListener("DOMContentLoaded", function() {
             let data = [];
             const tableBody = document.getElementById("stock-table-body");
@@ -134,6 +200,45 @@
                 updateTable(filteredData);
             }
         });
-    </script>
+    </script> -->
 </body>
 </html>
+
+<!-- 
+<div>※行をクリックするとその銘柄のチャートをポップアップで開きます。</div>
+<div id="popup-chart" class="overlay">
+    <div class="popup-bg" onclick="closePopup()"></div>
+    <div class="popup">
+        <h2 id="chart_symbol">SYMBOL</h2>
+        <a class="close" href="javascript:void(0);" onclick="closePopup()">&times;</a>
+        <div id="chart"></div>
+    </div>
+</div>
+<script src="https://unpkg.com/tabulator-tables@4.9.1/dist/js/tabulator.min.js"></script>
+<script src="https://s3.tradingview.com/tv.js"></script>
+
+<script>
+    function openPopup(symbol) {
+        document.getElementById("chart_symbol").innerText = symbol;
+        document.getElementById("popup-chart").style.display = "block";
+        new TradingView.widget({
+            "container_id": "chart",
+            "width": "100%",
+            "height": "400",
+            "symbol": "NASDAQ:" + symbol,
+            "interval": "D",
+            "theme": "light",
+            "style": "1",
+            "locale": "en",
+            "toolbar_bg": "#f1f3f6",
+            "enable_publishing": false,
+            "hide_side_toolbar": false,
+            "allow_symbol_change": true,
+            "save_image": false
+        });
+    }
+
+    function closePopup() {
+        document.getElementById("popup-chart").style.display = "none";
+    }
+</script> -->
