@@ -52,18 +52,6 @@
     
     <button id="download-btn">📥 データをダウンロード</button>
     
-    <!-- <table>
-        <thead>
-            <tr>
-                <th>Ticker</th>
-                <th>1ヶ月モメンタム</th>
-                <th>3ヶ月モメンタム</th>
-                <th>6ヶ月モメンタム</th>
-            </tr>
-        </thead>
-        <tbody id="stock-table-body"></tbody>
-    </table> -->
-
     <style>
         .overlay {
             display: none;
@@ -165,11 +153,11 @@
         async function loadStockData() {
             const response = await fetch("momentum_data_yf.csv");
             const text = await response.text();
-            const rows = text.split("\n").slice(1);
+            const rows = text.split("\n").slice(1).filter(row => row.trim() !== "");
             const stocks = rows.map(row => {
-                const cols = row.split(",");
-                return { ticker: cols[0], momentum1m: parseFloat(cols[1]), momentum3m: parseFloat(cols[2]), momentum6m: parseFloat(cols[3]) };
-            });
+                const cols = row.split(",").map(col => col.trim());
+                return { ticker: cols[0] || "", momentum1m: parseFloat(cols[1]) || 0, momentum3m: parseFloat(cols[2]) || 0, momentum6m: parseFloat(cols[3]) || 0 };
+            }).filter(stock => stock.ticker !== "");
             return stocks;
         }
         function updateTable(stocks) {
@@ -190,6 +178,7 @@
                 const row = document.createElement("tr");
                 row.dataset.ticker = stock.ticker;
                 row.innerHTML = `<td>${stock.ticker}</td><td>${stock.momentum1m}</td><td>${stock.momentum3m}</td><td>${stock.momentum6m}</td>`;
+                row.addEventListener("click", () => openPopup(stock.ticker));
                 tableBody.appendChild(row);
             });
         }
