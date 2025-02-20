@@ -107,20 +107,8 @@
     </div>
     <div class="slider-container">
         <label>1ヶ月モメンタム範囲: </label>
-        <input type="range" id="slider-1m" min="-50" max="100" step="1" value="-10,30">
+        <input type="range" id="slider-1m" min="-50" max="100" step="1" value="-10" multiple>
         <span id="range-1m">-10 ~ 30</span>
-    </div>
-    <div class="slider-container">
-        <label>3ヶ月モメンタム範囲: </label>
-        <input type="range" id="slider-3m-min" min="-50" max="100" step="1" value="-10">
-        <input type="range" id="slider-3m-max" min="-50" max="100" step="1" value="30">
-        <span id="range-3m">-10 ~ 30</span>
-    </div>
-    <div class="slider-container">
-        <label>6ヶ月モメンタム範囲: </label>
-        <input type="range" id="slider-6m-min" min="-50" max="100" step="1" value="-10">
-        <input type="range" id="slider-6m-max" min="-50" max="100" step="1" value="30">
-        <span id="range-6m">-10 ~ 30</span>
     </div>
     <script src="https://unpkg.com/tabulator-tables@4.9.1/dist/js/tabulator.min.js"></script>
     <script src="https://s3.tradingview.com/tv.js"></script>
@@ -160,16 +148,13 @@
             return stocks;
         }
         function updateTable(stocks) {
-            const [min1m, max1m] = document.getElementById("slider-1m").value.split(",").map(Number);
-            const min3m = parseFloat(document.getElementById("slider-3m-min").value);
-            const max3m = parseFloat(document.getElementById("slider-3m-max").value);
-            const min6m = parseFloat(document.getElementById("slider-6m-min").value);
-            const max6m = parseFloat(document.getElementById("slider-6m-max").value);
+            const slider = document.getElementById("slider-1m");
+            const values = slider.value.split(',');
+            const min1m = parseFloat(values[0]);
+            const max1m = parseFloat(values[1]);
             document.getElementById("range-1m").innerText = `${min1m} ~ ${max1m}`;
             const filteredStocks = stocks.filter(stock => 
-                stock.momentum1m >= min1m && stock.momentum1m <= max1m &&
-                stock.momentum3m >= min3m && stock.momentum3m <= max3m &&
-                stock.momentum6m >= min6m && stock.momentum6m <= max6m
+                stock.momentum1m >= min1m && stock.momentum1m <= max1m
             );
             const tableBody = document.getElementById("stock-table-body");
             tableBody.innerHTML = "";
@@ -184,9 +169,7 @@
         document.addEventListener("DOMContentLoaded", async function() {
             const stocks = await loadStockData();
             updateTable(stocks);
-            document.querySelectorAll("input[type=range]").forEach(slider => {
-                slider.addEventListener("input", () => updateTable(stocks));
-            });
+            document.getElementById("slider-1m").addEventListener("input", () => updateTable(stocks));
         });
     </script>
     
