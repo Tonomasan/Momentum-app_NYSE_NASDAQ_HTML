@@ -189,8 +189,8 @@
             const max6m = parseFloat(document.getElementById("max-6m").value);
             const filteredStocks = stocks.filter(stock => 
                 stock.momentum1m >= min1m && stock.momentum1m <= max1m &&
-                stock.momentum1m >= min3m && stock.momentum1m <= max3m &&
-                stock.momentum1m >= min6m && stock.momentum1m <= max6m
+                stock.momentum1m >= min3m && stock.momentum3m <= max3m &&
+                stock.momentum1m >= min6m && stock.momentum6m <= max6m
             );
             const tableBody = document.getElementById("stock-table-body");
             tableBody.innerHTML = "";
