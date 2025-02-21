@@ -157,7 +157,25 @@
             <div id="chart"></div>
         </div>
     </div>
-
+    <!-- <div class="input-container">
+        <label>1ヶ月モメンタム最小値: </label>
+        <input type="number" id="min-1m" value="-10">
+        <label>最大値: </label>
+        <input type="number" id="max-1m" value="30">
+    </div>
+    <div class="input-container">
+        <label>3ヶ月モメンタム最小値: </label>
+        <input type="number" id="min-3m" value="-10">
+        <label>最大値: </label>
+        <input type="number" id="max-3m" value="30">
+    </div>
+    <div class="input-container">
+        <label>6ヶ月モメンタム最小値: </label>
+        <input type="number" id="min-6m" value="-10">
+        <label>最大値: </label>
+        <input type="number" id="max-6m" value="30">
+    </div> -->
+    <button onclick="updateTableFromInputs()">適用</button>
     <script src="https://unpkg.com/tabulator-tables@4.9.1/dist/js/tabulator.min.js"></script>
     <script src="https://s3.tradingview.com/tv.js"></script>
     <script>
@@ -217,14 +235,15 @@
                 tableBody.appendChild(row);
             });
         }
+        function updateTableFromInputs() {
+            loadStockData().then(updateTable);
+        }
         document.addEventListener("DOMContentLoaded", async function() {
             const stocks = await loadStockData();
             updateTable(stocks);
-            document.querySelectorAll("input[type=number]").forEach(input => {
-                input.addEventListener("input", () => updateTable(stocks));
-            });
         });
     </script>
+    
     
     
 </body>
