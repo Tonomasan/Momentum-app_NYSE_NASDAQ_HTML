@@ -4,19 +4,31 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>米国株モメンタム検索</title>
-
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f4f4f4;
+        }
+        .slider-container {
+            margin-bottom: 20px;
+        }
+    </style>
 </head>
 <body>
     <h1>📈 米国株モメンタム検索</h1>
-
-    <div class="input-container">
-        <label>1ヶ月モメンタム最小値: </label>
-        <input type="number" id="min-1m" value="-10">
-        <label>最大値: </label>
-        <input type="number" id="max-1m" value="30">
-        <button onclick="updateTableFromInputs()">適用</button>
-    </div>
-
+    
     <button id="download-btn">📥 データをダウンロード</button>
     
     <style>
@@ -106,7 +118,33 @@
             cursor: pointer;
         }
     </style>
- 
+    <div>※行をクリックするとその銘柄のチャートをポップアップで開きます。</div>
+    <table>
+        <thead>
+            <tr>
+                <th>Ticker</th>
+                <th>1ヶ月モメンタム</th>
+                <th>3ヶ月モメンタム</th>
+                <th>6ヶ月モメンタム</th>
+            </tr>
+        </thead>
+        <tbody id="stock-table-body"></tbody>
+    </table>
+    <div id="popup-chart" class="overlay">
+        <div class="popup-bg" onclick="closePopup()"></div>
+        <div class="popup">
+            <h2 id="chart_symbol">SYMBOL</h2>
+            <a class="close" href="javascript:void(0);" onclick="closePopup()">&times;</a>
+            <div id="chart"></div>
+        </div>
+    </div>
+    <div class="input-container">
+        <label>1ヶ月モメンタム最小値: </label>
+        <input type="number" id="min-1m" value="-10">
+        <label>最大値: </label>
+        <input type="number" id="max-1m" value="30">
+        <button onclick="updateTableFromInputs()">適用</button>
+    </div>
     <script src="https://unpkg.com/tabulator-tables@4.9.1/dist/js/tabulator.min.js"></script>
     <script src="https://s3.tradingview.com/tv.js"></script>
     <script>
