@@ -107,11 +107,33 @@
     </div>
     <div class="slider-container">
         <label>1ヶ月モメンタム範囲: </label>
-        <input type="range" id="slider-1m" min="-50" max="100" step="1" value="-10" multiple>
+        <input type="range" id="slider-1m-min" min="-50" max="100" step="1" value="-10">
+        <input type="range" id="slider-1m-max" min="-50" max="100" step="1" value="30">
         <span id="range-1m">-10 ~ 30</span>
     </div>
     <script src="https://unpkg.com/tabulator-tables@4.9.1/dist/js/tabulator.min.js"></script>
     <script src="https://s3.tradingview.com/tv.js"></script>
+
+    <script>
+        function updateRangeDisplay() {
+            const minSlider = document.getElementById("slider-1m-min");
+            const maxSlider = document.getElementById("slider-1m-max");
+            let minValue = parseFloat(minSlider.value);
+            let maxValue = parseFloat(maxSlider.value);
+    
+            // 最大値が最小値より小さくならないよう制御
+            if (minValue >= maxValue) {
+                minSlider.value = maxValue - 1;
+                minValue = maxValue - 1;
+            }
+    
+            document.getElementById("range-1m").innerText = `${minValue} ~ ${maxValue}`;
+            updateTable(); // テーブルのフィルタリングを更新
+        }
+    
+        document.getElementById("slider-1m-min").addEventListener("input", updateRangeDisplay);
+        document.getElementById("slider-1m-max").addEventListener("input", updateRangeDisplay);
+    </script>
     <script>
         function openPopup(symbol) {
             document.getElementById("chart_symbol").innerText = symbol;
