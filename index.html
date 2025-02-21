@@ -105,35 +105,61 @@
             <div id="chart"></div>
         </div>
     </div>
+
+    <!-- jQRangeSlider のCSSとJSを追加 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jquery-ui-dist/jquery-ui.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jqrangeslider/css/iThing.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery-ui-dist/jquery-ui.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jqrangeslider/js/jQAllRangeSliders-withRuler-min.js"></script>
+
     <div class="slider-container">
         <label>1ヶ月モメンタム範囲: </label>
-        <input type="range" id="slider-1m-min" min="-50" max="100" step="1" value="-10">
-        <input type="range" id="slider-1m-max" min="-50" max="100" step="1" value="30">
+        <div id="slider-1m"></div>
         <span id="range-1m">-10 ~ 30</span>
     </div>
+
     <script src="https://unpkg.com/tabulator-tables@4.9.1/dist/js/tabulator.min.js"></script>
     <script src="https://s3.tradingview.com/tv.js"></script>
 
     <script>
-        function updateRangeDisplay() {
-            const minSlider = document.getElementById("slider-1m-min");
-            const maxSlider = document.getElementById("slider-1m-max");
-            let minValue = parseFloat(minSlider.value);
-            let maxValue = parseFloat(maxSlider.value);
-    
-            // 最大値が最小値より小さくならないよう制御
-            if (minValue >= maxValue) {
-                minSlider.value = maxValue - 1;
-                minValue = maxValue - 1;
-            }
-    
-            document.getElementById("range-1m").innerText = `${minValue} ~ ${maxValue}`;
-            updateTable(); // テーブルのフィルタリングを更新
+        document.addEventListener("DOMContentLoaded", async function() {
+            const stocks = await loadStockData();
+
+            // jQRangeSliderの初期化
+            $("#slider-1m").rangeSlider({
+                bounds: { min: -50, max: 100 }, // スライダーの最小・最大値
+                defaultValues: { min: -10, max: 30 }, // 初期値
+                step: 1,
+                arrows: true,
+                range: { min: 1 }, // 最小範囲の制限
+            });
+
+            // スライダーの値が変わったらテーブルを更新
+            $("#slider-1m").on("valuesChanged", function(e, data) {
+                const min1m = data.values.min;
+                const max1m = data.values.max;
+                document.getElementById("range-1m").innerText = `${min1m} ~ ${max1m}`;
+                updateTable(stocks, min1m, max1m);
+            });
+
+            updateTable(stocks, -10, 30); // 初期データ表示
+        });
+
+        function updateTable(stocks, min1m, max1m) {
+            const filteredStocks = stocks.filter(stock => stock.momentum1m >= min1m && stock.momentum1m <= max1m);
+            const tableBody = document.getElementById("stock-table-body");
+            tableBody.innerHTML = "";
+            filteredStocks.forEach(stock => {
+                const row = document.createElement("tr");
+                row.dataset.ticker = stock.ticker;
+                row.innerHTML = `<td>${stock.ticker}</td><td>${stock.momentum1m}</td><td>${stock.momentum3m}</td><td>${stock.momentum6m}</td>`;
+                row.addEventListener("click", () => openPopup(stock.ticker));
+                tableBody.appendChild(row);
+            });
         }
-    
-        document.getElementById("slider-1m-min").addEventListener("input", updateRangeDisplay);
-        document.getElementById("slider-1m-max").addEventListener("input", updateRangeDisplay);
     </script>
+    
     <script>
         function openPopup(symbol) {
             document.getElementById("chart_symbol").innerText = symbol;
