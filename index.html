@@ -183,8 +183,14 @@
         function updateTable(stocks) {
             const min1m = parseFloat(document.getElementById("min-1m").value);
             const max1m = parseFloat(document.getElementById("max-1m").value);
+            const min3m = parseFloat(document.getElementById("min-3m").value);
+            const max3m = parseFloat(document.getElementById("max-3m").value);
+            const min6m = parseFloat(document.getElementById("min-6m").value);
+            const max6m = parseFloat(document.getElementById("max-6m").value);
             const filteredStocks = stocks.filter(stock => 
-                stock.momentum1m >= min1m && stock.momentum1m <= max1m
+                stock.momentum1m >= min1m && stock.momentum1m <= max1m &&
+                stock.momentum1m >= min3m && stock.momentum1m <= max3m &&
+                stock.momentum1m >= min6m && stock.momentum1m <= max6m
             );
             const tableBody = document.getElementById("stock-table-body");
             tableBody.innerHTML = "";
