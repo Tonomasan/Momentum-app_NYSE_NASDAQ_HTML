@@ -233,8 +233,10 @@
         });
         
         document.querySelectorAll("input[type=number]").forEach(input => {
+            input.style.width = "80px"; // 入力ボックスの幅を短くする
             input.addEventListener("input", updateTable);
         });
+        
         
         document.addEventListener("DOMContentLoaded", async function() {
             stocks = await loadStockData();
