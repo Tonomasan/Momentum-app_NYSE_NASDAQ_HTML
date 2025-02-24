@@ -133,8 +133,8 @@
 
             new TradingView.widget({
                 "container_id": "chart",
-                "width": "700",
-                "height": "550",
+                "width": "500",
+                "height": "400",
                 "symbol": tradingSymbol,
                 "interval": "D",
                 "theme": "light",
@@ -233,7 +233,7 @@
         });
         
         document.querySelectorAll("input[type=number]").forEach(input => {
-            input.style.width = "80px"; // 入力ボックスの幅を短くする
+            input.style.width = "40px"; // 入力ボックスの幅を短くする
             input.addEventListener("input", updateTable);
         });
         
