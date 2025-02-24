@@ -114,27 +114,22 @@
     <script src="https://unpkg.com/tabulator-tables@4.9.1/dist/js/tabulator.min.js"></script>
     <script src="https://s3.tradingview.com/tv.js"></script>
     <script>
-        function openPopup(symbol) {
+        function openPopup(symbol, exchange) {
             document.getElementById("chart_symbol").innerText = symbol;
             document.getElementById("popup-chart").style.display = "flex";
             document.getElementById("chart").innerHTML = "";
 
-            // 取引所情報を適切に付与
-            let exchangePrefix = ""; 
-
-            if (symbol.match(/^[A-Z]+$/)) {
-                exchangePrefix = "NASDAQ:";  // 米国株
-            } else if (symbol.match(/^NYSE:/)) {
+            let exchangePrefix = "";
+            if (exchange === "NYSE") {
                 exchangePrefix = "NYSE:";
-            } else if (symbol.match(/^TSE:/)) {
-                exchangePrefix = "TSE:";
+            } else if (exchange === "NASDAQ") {
+                exchangePrefix = "NASDAQ:";
             } else {
-                console.warn("未対応のシンボル形式:", symbol);
+                console.warn("未対応の取引所: ", exchange);
             }
 
             let tradingSymbol = exchangePrefix + symbol;
-
-            console.log("TradingViewに渡すシンボル:", tradingSymbol);  // デバッグ用
+            console.log("TradingViewに渡すシンボル:", tradingSymbol);
 
             new TradingView.widget({
                 "container_id": "chart",
@@ -208,8 +203,9 @@
             filteredStocks.forEach(stock => {
                 const row = document.createElement("tr");
                 row.dataset.ticker = stock.ticker;
+                row.dataset.exchange = stock.exchange; // 取引所情報をデータ属性に追加
                 row.innerHTML = `<td>${stock.ticker}</td><td>${stock.momentum1m}</td><td>${stock.momentum3m}</td><td>${stock.momentum6m}</td>`;
-                row.addEventListener("click", () => openPopup(stock.ticker));
+                row.addEventListener("click", () => openPopup(stock.ticker, stock.exchange));
                 tableBody.appendChild(row);
             });
         }

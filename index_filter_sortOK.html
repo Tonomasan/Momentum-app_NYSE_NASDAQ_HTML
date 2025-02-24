@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>米国株モメンタム検索</title>
-    <!-- index.htmlで必要なデータ"momentum_data_yf.csv"はmomentum_calculator.pyを実行、momentum_data_yf.csvを出力する -->
+    <!-- index.htmlで必要なデータ"momentum_data.csv"はmomentum_calculator.pyを実行、momentum_data.csvを出力する -->
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -164,7 +164,7 @@
         let currentSortOrder = 1;
 
         async function loadStockData() {
-            const response = await fetch("momentum_data_yf.csv");
+            const response = await fetch("momentum_data.csv");
             const text = await response.text();
             const rows = text.split("\n").slice(1).filter(row => row.trim() !== "");
             return rows.map(row => {
