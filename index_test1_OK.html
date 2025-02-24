@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>米国株モメンタム検索</title>
+    <!-- index.htmlで必要なデータ"momentum_data_yf.csv"はmomentum_calculator.pyを実行、momentum_data_yf.csvを出力する -->
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -68,21 +69,18 @@
         <input type="number" id="min-1m" value="-10">
         <label>最大値: </label>
         <input type="number" id="max-1m" value="30">
-        <!-- <button onclick="updateTableFromInputs()">適用</button> -->
     </div>
     <div class="input-container">
         <label>3ヶ月モメンタム最小値: </label>
         <input type="number" id="min-3m" value="-10">
         <label>最大値: </label>
         <input type="number" id="max-3m" value="30">
-        <!-- <button onclick="updateTableFromInputs()">適用</button> -->
     </div>
     <div class="input-container">
         <label>6ヶ月モメンタム最小値: </label>
         <input type="number" id="min-6m" value="-10">
         <label>最大値: </label>
         <input type="number" id="max-6m" value="30">
-        <!-- <button onclick="updateTableFromInputs()">適用</button> -->
     </div>
 
     <div>※行をクリックするとその銘柄のチャートをポップアップで開きます。</div>
@@ -141,7 +139,14 @@
         }
     </style>
 
-    <button id="download-btn">📥 データをダウンロード</button>
+    <div id="popup-chart" class="overlay">
+        <div class="popup-bg" onclick="closePopup()"></div>
+        <div class="popup">
+            <h2 id="chart_symbol">SYMBOL</h2>
+            <a class="close" href="javascript:void(0);" onclick="closePopup()">&times;</a>
+            <div id="chart"></div>
+        </div>
+    </div>
 
     <script src="https://unpkg.com/tabulator-tables@4.9.1/dist/js/tabulator.min.js"></script>
     <script src="https://s3.tradingview.com/tv.js"></script>
@@ -150,7 +155,24 @@
             document.getElementById("chart_symbol").innerText = symbol;
             document.getElementById("popup-chart").style.display = "flex";
             document.getElementById("chart").innerHTML = "";
-            let tradingSymbol = symbol.includes(":") ? symbol : "NASDAQ:" + symbol;
+
+            // 取引所情報を適切に付与
+            let exchangePrefix = ""; 
+
+            if (symbol.match(/^[A-Z]+$/)) {
+                exchangePrefix = "NASDAQ:";  // 米国株
+            } else if (symbol.match(/^NYSE:/)) {
+                exchangePrefix = "NYSE:";
+            } else if (symbol.match(/^TSE:/)) {
+                exchangePrefix = "TSE:";
+            } else {
+                console.warn("未対応のシンボル形式:", symbol);
+            }
+
+            let tradingSymbol = exchangePrefix + symbol;
+
+            console.log("TradingViewに渡すシンボル:", tradingSymbol);  // デバッグ用
+
             new TradingView.widget({
                 "container_id": "chart",
                 "width": "100%",
@@ -167,6 +189,7 @@
                 "save_image": false
             });
         }
+
         function closePopup() {
             document.getElementById("popup-chart").style.display = "none";
         }
@@ -189,8 +212,8 @@
             const max6m = parseFloat(document.getElementById("max-6m").value);
             const filteredStocks = stocks.filter(stock => 
                 stock.momentum1m >= min1m && stock.momentum1m <= max1m &&
-                stock.momentum1m >= min3m && stock.momentum3m <= max3m &&
-                stock.momentum1m >= min6m && stock.momentum6m <= max6m
+                stock.momentum3m >= min3m && stock.momentum3m <= max3m &&
+                stock.momentum6m >= min6m && stock.momentum6m <= max6m
             );
             const tableBody = document.getElementById("stock-table-body");
             tableBody.innerHTML = "";
@@ -202,23 +225,14 @@
                 tableBody.appendChild(row);
             });
         }
-        function updateTableFromInputs() {
-            loadStockData().then(updateTable);
-        }
         document.addEventListener("DOMContentLoaded", async function() {
             const stocks = await loadStockData();
             updateTable(stocks);
-            document.getElementById("min-1m").addEventListener("input", () => updateTable(stocks));
-            document.getElementById("max-1m").addEventListener("input", () => updateTable(stocks));
-            document.getElementById("min-3m").addEventListener("input", () => updateTable(stocks));
-            document.getElementById("max-3m").addEventListener("input", () => updateTable(stocks));
-            document.getElementById("min-6m").addEventListener("input", () => updateTable(stocks));
-            document.getElementById("max-6m").addEventListener("input", () => updateTable(stocks));
+            document.querySelectorAll("input[type=number]").forEach(input => {
+                input.addEventListener("input", () => updateTable(stocks));
+            });
         });
     </script>
-    
-    
-    
     
     
 </body>

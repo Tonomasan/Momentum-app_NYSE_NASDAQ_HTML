@@ -49,7 +49,7 @@ def fetch_stock_data(ticker):
     try:
         end_date = datetime.datetime.today()
         start_date = end_date - datetime.timedelta(days=365)
-        df = yf.download(ticker, start=start_date, end=end_date, auto_adjust=False, multi_level_index=False)
+        df = yf.download(ticker, start=start_date, end=end_date)
         df.index = pd.to_datetime(df.index)
         return df
     except Exception as e:
