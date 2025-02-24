@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>米国株モメンタム検索</title>
+    <!-- index.htmlで必要なデータ"momentum_data_yf.csv"はmomentum_calculator.pyを実行、momentum_data_yf.csvを出力する -->
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -21,9 +22,6 @@
         th {
             background-color: #f4f4f4;
         }
-        /* .slider-container {
-            margin-bottom: 20px;
-        } */
     </style>
 </head>
 <body>
@@ -88,9 +86,9 @@
         <thead>
             <tr>
                 <th>Ticker</th>
-                <th>1ヶ月モメンタム</th>
-                <th>3ヶ月モメンタム</th>
-                <th>6ヶ月モメンタム</th>
+                <th data-sort="1">1ヶ月モメンタム</th>
+                <th data-sort="2">3ヶ月モメンタム</th>
+                <th data-sort="3">6ヶ月モメンタム</th>
             </tr>
         </thead>
         <tbody id="stock-table-body"></tbody>
@@ -154,7 +152,24 @@
             document.getElementById("chart_symbol").innerText = symbol;
             document.getElementById("popup-chart").style.display = "flex";
             document.getElementById("chart").innerHTML = "";
-            let tradingSymbol = symbol.includes(":") ? symbol : "NASDAQ:" + symbol;
+
+            // 取引所情報を適切に付与
+            let exchangePrefix = ""; 
+
+            if (symbol.match(/^[A-Z]+$/)) {
+                exchangePrefix = "NASDAQ:";  // 米国株
+            } else if (symbol.match(/^NYSE:/)) {
+                exchangePrefix = "NYSE:";
+            } else if (symbol.match(/^TSE:/)) {
+                exchangePrefix = "TSE:";
+            } else {
+                console.warn("未対応のシンボル形式:", symbol);
+            }
+
+            let tradingSymbol = exchangePrefix + symbol;
+
+            console.log("TradingViewに渡すシンボル:", tradingSymbol);  // デバッグ用
+
             new TradingView.widget({
                 "container_id": "chart",
                 "width": "100%",
@@ -171,48 +186,81 @@
                 "save_image": false
             });
         }
+
         function closePopup() {
             document.getElementById("popup-chart").style.display = "none";
         }
+
+
+        let sortDirection = {};
         async function loadStockData() {
             const response = await fetch("momentum_data_yf.csv");
             const text = await response.text();
             const rows = text.split("\n").slice(1).filter(row => row.trim() !== "");
-            const stocks = rows.map(row => {
+            return rows.map(row => {
                 const cols = row.split(",").map(col => col.trim());
-                return { ticker: cols[0] || "", momentum1m: parseFloat(cols[1]) || 0, momentum3m: parseFloat(cols[2]) || 0, momentum6m: parseFloat(cols[3]) || 0 };
+                return { ticker: cols[0], momentum1m: parseFloat(cols[1]), momentum3m: parseFloat(cols[2]), momentum6m: parseFloat(cols[3]) };
             }).filter(stock => stock.ticker !== "");
-            return stocks;
         }
         function updateTable(stocks) {
-            const min1m = parseFloat(document.getElementById("min-1m").value);
-            const max1m = parseFloat(document.getElementById("max-1m").value);
-            const min3m = parseFloat(document.getElementById("min-3m").value);
-            const max3m = parseFloat(document.getElementById("max-3m").value);
-            const min6m = parseFloat(document.getElementById("min-6m").value);
-            const max6m = parseFloat(document.getElementById("max-6m").value);
-            const filteredStocks = stocks.filter(stock => 
-                stock.momentum1m >= min1m && stock.momentum1m <= max1m &&
-                stock.momentum3m >= min3m && stock.momentum3m <= max3m &&
-                stock.momentum6m >= min6m && stock.momentum6m <= max6m
-            );
             const tableBody = document.getElementById("stock-table-body");
             tableBody.innerHTML = "";
-            filteredStocks.forEach(stock => {
+            stocks.forEach(stock => {
                 const row = document.createElement("tr");
-                row.dataset.ticker = stock.ticker;
                 row.innerHTML = `<td>${stock.ticker}</td><td>${stock.momentum1m}</td><td>${stock.momentum3m}</td><td>${stock.momentum6m}</td>`;
-                row.addEventListener("click", () => openPopup(stock.ticker));
                 tableBody.appendChild(row);
             });
+        }
+        function sortTable(columnIndex) {
+            let stocks = Array.from(document.getElementById("stock-table-body").children).map(row => ({
+                ticker: row.children[0].textContent,
+                momentum1m: parseFloat(row.children[1].textContent),
+                momentum3m: parseFloat(row.children[2].textContent),
+                momentum6m: parseFloat(row.children[3].textContent)
+            }));
+            const key = ["momentum1m", "momentum3m", "momentum6m"][columnIndex - 1];
+            sortDirection[key] = !sortDirection[key];
+            stocks.sort((a, b) => sortDirection[key] ? a[key] - b[key] : b[key] - a[key]);
+            updateTable(stocks);
         }
         document.addEventListener("DOMContentLoaded", async function() {
             const stocks = await loadStockData();
             updateTable(stocks);
-            document.querySelectorAll("input[type=number]").forEach(input => {
-                input.addEventListener("input", () => updateTable(stocks));
+            document.querySelectorAll("th[data-sort]").forEach(th => {
+                th.addEventListener("click", () => sortTable(parseInt(th.getAttribute("data-sort"))));
             });
         });
+
+
+        // function updateTable(stocks) {
+        //     const min1m = parseFloat(document.getElementById("min-1m").value);
+        //     const max1m = parseFloat(document.getElementById("max-1m").value);
+        //     const min3m = parseFloat(document.getElementById("min-3m").value);
+        //     const max3m = parseFloat(document.getElementById("max-3m").value);
+        //     const min6m = parseFloat(document.getElementById("min-6m").value);
+        //     const max6m = parseFloat(document.getElementById("max-6m").value);
+        //     const filteredStocks = stocks.filter(stock => 
+        //         stock.momentum1m >= min1m && stock.momentum1m <= max1m &&
+        //         stock.momentum3m >= min3m && stock.momentum3m <= max3m &&
+        //         stock.momentum6m >= min6m && stock.momentum6m <= max6m
+        //     );
+        //     const tableBody = document.getElementById("stock-table-body");
+        //     tableBody.innerHTML = "";
+        //     filteredStocks.forEach(stock => {
+        //         const row = document.createElement("tr");
+        //         row.dataset.ticker = stock.ticker;
+        //         row.innerHTML = `<td>${stock.ticker}</td><td>${stock.momentum1m}</td><td>${stock.momentum3m}</td><td>${stock.momentum6m}</td>`;
+        //         row.addEventListener("click", () => openPopup(stock.ticker));
+        //         tableBody.appendChild(row);
+        //     });
+        // }
+        // document.addEventListener("DOMContentLoaded", async function() {
+        //     const stocks = await loadStockData();
+        //     updateTable(stocks);
+        //     document.querySelectorAll("input[type=number]").forEach(input => {
+        //         input.addEventListener("input", () => updateTable(stocks));
+        //     });
+        // });
     </script>
     
     
