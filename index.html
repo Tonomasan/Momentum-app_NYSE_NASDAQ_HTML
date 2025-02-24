@@ -210,7 +210,7 @@
                 const row = document.createElement("tr");
                 row.dataset.ticker = stock.ticker;
                 row.dataset.exchange = stock.exchange; // 取引所情報をデータ属性に追加
-                row.innerHTML = `<td>${stock.ticker}</td><td>${stock.momentum1m.toFixed(2)}</td><td>${stock.momentum3m.toFixed(2)}</td><td>${stock.momentum6m.toFixed(2)}</td>`;
+                row.innerHTML = `<td>${stock.ticker}</td><td>${stock.momentum1m.toFixed(2)}</td><td>${stock.momentum3m.toFixed(2)}</td><td>${stock.momentum6m.toFixed(2)}</td><td></td>`;
                 row.addEventListener("click", () => openPopup(stock.ticker, stock.exchange));
                 tableBody.appendChild(row);
             });
