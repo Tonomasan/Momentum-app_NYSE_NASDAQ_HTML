@@ -251,6 +251,11 @@
                 updateTable(stocks);
             });
         });
+        
+        document.querySelectorAll("input[type=number]").forEach(input => {
+            input.addEventListener("input", () => updateTable(stocks));
+        });
+
 
 
         // function updateTable(stocks) {
