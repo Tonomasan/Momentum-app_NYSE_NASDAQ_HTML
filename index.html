@@ -133,8 +133,8 @@
 
             new TradingView.widget({
                 "container_id": "chart",
-                "width": "600",
-                "height": "500",
+                "width": "700",
+                "height": "550",
                 "symbol": tradingSymbol,
                 "interval": "D",
                 "theme": "light",
@@ -148,7 +148,7 @@
             });
             
             let chartContainer = document.getElementById("chart");
-            chartContainer.style.position = "absolute";
+            chartContainer.style.position = "fixed";
             chartContainer.style.top = "10px";
             chartContainer.style.left = "10px";
             chartContainer.style.zIndex = "1000";
