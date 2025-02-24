@@ -202,15 +202,66 @@
                 return { ticker: cols[0], momentum1m: parseFloat(cols[1]), momentum3m: parseFloat(cols[2]), momentum6m: parseFloat(cols[3]) };
             }).filter(stock => stock.ticker !== "");
         }
+
         function updateTable(stocks) {
+            const min1m = parseFloat(document.getElementById("min-1m").value);
+            const max1m = parseFloat(document.getElementById("max-1m").value);
+            const min3m = parseFloat(document.getElementById("min-3m").value);
+            const max3m = parseFloat(document.getElementById("max-3m").value);
+            const min6m = parseFloat(document.getElementById("min-6m").value);
+            const max6m = parseFloat(document.getElementById("max-6m").value);
+            
+            let filteredStocks = stocks.filter(stock => 
+                stock.momentum1m >= min1m && stock.momentum1m <= max1m &&
+                stock.momentum3m >= min3m && stock.momentum3m <= max3m &&
+                stock.momentum6m >= min6m && stock.momentum6m <= max6m
+            );
+            
+            if (currentSortColumn) {
+                filteredStocks.sort((a, b) => {
+                    return currentSortOrder * (a[currentSortColumn] - b[currentSortColumn]);
+                });
+            }
+            
             const tableBody = document.getElementById("stock-table-body");
             tableBody.innerHTML = "";
-            stocks.forEach(stock => {
+            filteredStocks.forEach(stock => {
                 const row = document.createElement("tr");
+                row.dataset.ticker = stock.ticker;
                 row.innerHTML = `<td>${stock.ticker}</td><td>${stock.momentum1m}</td><td>${stock.momentum3m}</td><td>${stock.momentum6m}</td>`;
+                row.addEventListener("click", () => openPopup(stock.ticker));
                 tableBody.appendChild(row);
             });
         }
+        
+        let currentSortColumn = null;
+        let currentSortOrder = 1;
+        
+        document.querySelectorAll("th").forEach((th, index) => {
+            th.addEventListener("click", () => {
+                const columns = ["ticker", "momentum1m", "momentum3m", "momentum6m"];
+                let column = columns[index];
+                
+                if (currentSortColumn === column) {
+                    currentSortOrder *= -1;
+                } else {
+                    currentSortColumn = column;
+                    currentSortOrder = 1;
+                }
+                updateTable(stocks);
+            });
+        });
+
+
+        // function updateTable(stocks) {
+        //     const tableBody = document.getElementById("stock-table-body");
+        //     tableBody.innerHTML = "";
+        //     stocks.forEach(stock => {
+        //         const row = document.createElement("tr");
+        //         row.innerHTML = `<td>${stock.ticker}</td><td>${stock.momentum1m}</td><td>${stock.momentum3m}</td><td>${stock.momentum6m}</td>`;
+        //         tableBody.appendChild(row);
+        //     });
+        // }
         function sortTable(columnIndex) {
             let stocks = Array.from(document.getElementById("stock-table-body").children).map(row => ({
                 ticker: row.children[0].textContent,
