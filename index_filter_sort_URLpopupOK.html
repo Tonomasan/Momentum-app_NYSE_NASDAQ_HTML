@@ -133,8 +133,8 @@
 
             new TradingView.widget({
                 "container_id": "chart",
-                "width": "500",
-                "height": "450",
+                "width": "100%",
+                "height": "400",
                 "symbol": tradingSymbol,
                 "interval": "D",
                 "theme": "light",
@@ -146,10 +146,6 @@
                 "allow_symbol_change": true,
                 "save_image": false
             });
-            
-            document.getElementById("chart").style.position = "absolute";
-            document.getElementById("chart").style.top = "10px";
-            document.getElementById("chart").style.left = "10px";
         }
 
         function closePopup() {
