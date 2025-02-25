@@ -80,7 +80,7 @@
         <input type="number" id="max-6m" value="30">
     </div>
 
-    <div>※行をクリックするとその銘柄のチャートをポップアップで開きます。</div>
+    <div>※行クリック,銘柄チャート表示</div>
     
     <table>
         <thead>
@@ -133,7 +133,7 @@
 
             new TradingView.widget({
                 "container_id": "chart",
-                "width": "100%",
+                "width": "420",
                 "height": "400",
                 "symbol": tradingSymbol,
                 "interval": "D",
@@ -142,10 +142,16 @@
                 "locale": "en",
                 "toolbar_bg": "#f1f3f6",
                 "enable_publishing": false,
-                "hide_side_toolbar": false,
+                "hide_side_toolbar": true,
                 "allow_symbol_change": true,
                 "save_image": false
             });
+            
+            let chartContainer = document.getElementById("chart");
+            chartContainer.style.position = "fixed";
+            chartContainer.style.top = "0px";
+            chartContainer.style.left = "0px";
+            chartContainer.style.zIndex = "1000";
         }
 
         function closePopup() {
@@ -204,7 +210,7 @@
                 const row = document.createElement("tr");
                 row.dataset.ticker = stock.ticker;
                 row.dataset.exchange = stock.exchange; // 取引所情報をデータ属性に追加
-                row.innerHTML = `<td>${stock.ticker}</td><td>${stock.momentum1m}</td><td>${stock.momentum3m}</td><td>${stock.momentum6m}</td>`;
+                row.innerHTML = `<td>${stock.ticker}</td><td>${stock.momentum1m.toFixed(2)}</td><td>${stock.momentum3m.toFixed(2)}</td><td>${stock.momentum6m.toFixed(2)}</td>`;
                 row.addEventListener("click", () => openPopup(stock.ticker, stock.exchange));
                 tableBody.appendChild(row);
             });
@@ -227,8 +233,10 @@
         });
         
         document.querySelectorAll("input[type=number]").forEach(input => {
+            input.style.width = "40px"; // 入力ボックスの幅を短くする
             input.addEventListener("input", updateTable);
         });
+        
         
         document.addEventListener("DOMContentLoaded", async function() {
             stocks = await loadStockData();
