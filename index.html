@@ -257,10 +257,10 @@
             updateTable();
         });
 
-        document.querySelectorAll("input[type=number]").forEach(input => {
-            input.addEventListener("input", updateTable);
-        });
-        
+        // document.querySelectorAll("input[type=number]").forEach(input => {
+        //     input.addEventListener("input", updateTable);
+        // });
+
         function sortTable(columnIndex) {
             let stocks = Array.from(document.getElementById("stock-table-body").children).map(row => ({
                 ticker: row.children[0].textContent,
