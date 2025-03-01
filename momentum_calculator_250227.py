@@ -49,15 +49,9 @@ def fetch_stock_data(ticker):
     try:
         end_date = datetime.datetime.today()
         start_date = end_date - datetime.timedelta(days=365)
-        df = yf.download(ticker, start=start_date, end=end_date, auto_adjust=False)
-
-        if df.empty:
-            print(f"⚠️ {ticker} のデータが見つかりません (空のデータフレーム)")
-            return None
-
+        df = yf.download(ticker, start=start_date, end=end_date, auto_adjust=False, multi_level_index=False)
         df.index = pd.to_datetime(df.index)
         return df
-
     except Exception as e:
         print(f"❌ {ticker} のデータ取得失敗: {e}")
         return None
@@ -67,15 +61,10 @@ def calculate_momentum(df, ticker):
     momentum = {"Ticker": ticker}
     for label, days in MOMENTUM_PERIODS.items():
         if len(df) >= days:
-            avg_recent = df["Close"].iloc[-3:].mean()  # 直近3日間の平均
-            avg_past = df["Close"].iloc[-days-3:-days].mean() if len(df) >= days + 3 else df["Close"].iloc[0]
-            momentum[label] = (avg_recent / avg_past - 1) * 100
+            momentum[label] = (df["Close"].iloc[-1] / df["Close"].iloc[-days] - 1) * 100
         else:
             momentum[label] = np.nan
-
-    # Price 情報を追加
-    momentum["Price"] = df["Close"].iloc[-1]
-
+    
     # Exchange 情報を追加
     momentum["Exchange"] = "NYSE" if ticker in nyse_tickers else "NASDAQ"
     return momentum
