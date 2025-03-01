@@ -67,8 +67,8 @@ def calculate_momentum(df, ticker):
     momentum = {"Ticker": ticker}
     for label, days in MOMENTUM_PERIODS.items():
         if len(df) >= days:
-            avg_recent = df["Close"].iloc[-3:].mean()  # 直近3日間の平均
-            avg_past = df["Close"].iloc[-days-3:-days].mean() if len(df) >= days + 3 else df["Close"].iloc[0]
+            avg_recent = df["Close"].iloc[-5:].mean()  # 直近5日間の平均
+            avg_past = df["Close"].iloc[-days-5:-days].mean() if len(df) >= days + 5 else df["Close"].iloc[0]
             momentum[label] = (avg_recent / avg_past - 1) * 100
         else:
             momentum[label] = np.nan
