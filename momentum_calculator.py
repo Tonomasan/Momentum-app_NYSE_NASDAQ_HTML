@@ -49,7 +49,7 @@ def fetch_stock_data(ticker):
     try:
         end_date = datetime.datetime.today()
         start_date = end_date - datetime.timedelta(days=365)
-        df = yf.download(ticker, start=start_date, end=end_date, auto_adjust=False)
+        df = yf.download(ticker, start=start_date, end=end_date, auto_adjust=False, multi_level_index=False)
 
         if df.empty:
             print(f"⚠️ {ticker} のデータが見つかりません (空のデータフレーム)")
