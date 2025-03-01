@@ -11,13 +11,20 @@ from pandas_datareader import data as pdr
 NYSE_URL = "https://raw.githubusercontent.com/rreichel3/US-Stock-Symbols/main/nyse/nyse_tickers.txt"
 NASDAQ_URL = "https://raw.githubusercontent.com/rreichel3/US-Stock-Symbols/main/nasdaq/nasdaq_tickers.txt"
 
-# ⏳ 過去何日間のモメンタムを計算するか設定
+# ⏳ 過去何日間の株価モメンタムを計算するか設定
 MOMENTUM_PERIODS = {
     "1w": 5,    # 1週間
     "1m": 21,   # 1か月
     "3m": 63,   # 3か月
     "6m": 126,  # 6か月
     "1y": 252   # 1年
+}
+
+# ⏳ 過去何日間の出来高モメンタムを計算するか設定 #株価モメンタム銘柄がはじかれやすいので却下
+MOMENTUM_PERIODS_VOLUME = {
+    "1w_vol": 5,    # 1週間
+    "1m_vol": 21,   # 1か月
+    "3m_vol": 63,   # 3か月
 }
 
 # 1️⃣ GitHub から NYSE & NASDAQ の銘柄リストを取得

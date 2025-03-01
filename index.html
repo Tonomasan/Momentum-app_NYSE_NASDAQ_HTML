@@ -62,22 +62,28 @@
     </style>
 
     <div class="input-container">
-        <label>1ヶ月モメンタム最小値: </label>
-        <input type="number" id="min-1m" value="-10">
+        <label>1週間モメンタム最小値: </label>
+        <input type="number" id="min-1w" value="-20">
         <label>最大値: </label>
-        <input type="number" id="max-1m" value="30">
+        <input type="number" id="max-1w" value="10">
+    </div>
+    <div class="input-container">
+        <label>1ヶ月モメンタム最小値: </label>
+        <input type="number" id="min-1m" value="-20">
+        <label>最大値: </label>
+        <input type="number" id="max-1m" value="20">
     </div>
     <div class="input-container">
         <label>3ヶ月モメンタム最小値: </label>
-        <input type="number" id="min-3m" value="-10">
+        <input type="number" id="min-3m" value="0">
         <label>最大値: </label>
         <input type="number" id="max-3m" value="30">
     </div>
     <div class="input-container">
         <label>6ヶ月モメンタム最小値: </label>
-        <input type="number" id="min-6m" value="-10">
+        <input type="number" id="min-6m" value="0">
         <label>最大値: </label>
-        <input type="number" id="max-6m" value="30">
+        <input type="number" id="max-6m" value="40">
     </div>
     <div class="input-container">
         <label>株価 最小値: </label>
@@ -93,10 +99,11 @@
         <thead>
             <tr>
                 <th>Ticker</th>
-                <th data-sort="1">1ヶ月モメンタム</th>
-                <th data-sort="2">3ヶ月モメンタム</th>
-                <th data-sort="3">6ヶ月モメンタム</th>
-                <th data-sort="4">株価</th>
+                <th data-sort="1">1週間モメンタム</th>
+                <th data-sort="2">1ヶ月モメンタム</th>
+                <th data-sort="3">3ヶ月モメンタム</th>
+                <th data-sort="4">6ヶ月モメンタム</th>
+                <th data-sort="6">株価</th>
             </tr>
         </thead>
         <tbody id="stock-table-body"></tbody>
@@ -180,10 +187,11 @@
                 const cols = row.split(",").map(col => col.trim());
                 return { 
                     ticker: cols[0], 
-                    momentum1m: parseFloat(cols[1]), 
-                    momentum3m: parseFloat(cols[2]), 
-                    momentum6m: parseFloat(cols[3]),
-                    price: parseFloat(cols[4]),
+                    momentum1w: parseFloat(cols[1]), 
+                    momentum1m: parseFloat(cols[2]), 
+                    momentum3m: parseFloat(cols[3]), 
+                    momentum6m: parseFloat(cols[4]),
+                    price: parseFloat(cols[6]),
                 };
             }).filter(stock => stock.ticker !== "");
         }
@@ -191,6 +199,8 @@
         
 
         function updateTable() {
+            const min1w = isNaN(parseFloat(document.getElementById("min-1w").value)) ? -Infinity : parseFloat(document.getElementById("min-1w").value);
+            const max1w = isNaN(parseFloat(document.getElementById("max-1w").value)) ? Infinity : parseFloat(document.getElementById("max-1w").value);
             const min1m = isNaN(parseFloat(document.getElementById("min-1m").value)) ? -Infinity : parseFloat(document.getElementById("min-1m").value);
             const max1m = isNaN(parseFloat(document.getElementById("max-1m").value)) ? Infinity : parseFloat(document.getElementById("max-1m").value);
             const min3m = isNaN(parseFloat(document.getElementById("min-3m").value)) ? -Infinity : parseFloat(document.getElementById("min-3m").value);
@@ -201,6 +211,7 @@
             const maxprice = isNaN(parseFloat(document.getElementById("max-price").value)) ? Infinity : parseFloat(document.getElementById("max-price").value);
             
             let filteredStocks = stocks.filter(stock => 
+                stock.momentum1w >= min1w && stock.momentum1w <= max1w &&
                 stock.momentum1m >= min1m && stock.momentum1m <= max1m &&
                 stock.momentum3m >= min3m && stock.momentum3m <= max3m &&
                 stock.momentum6m >= min6m && stock.momentum6m <= max6m &&
@@ -224,8 +235,8 @@
                 const row = document.createElement("tr");
                 row.dataset.ticker = stock.ticker;
                 row.dataset.exchange = stock.exchange; // 取引所情報をデータ属性に追加
-                row.innerHTML = `<td>${stock.ticker}</td><td>${stock.momentum1m.toFixed(2)}</td><td>${stock.momentum3m.toFixed(2)}</td>
-                <td>${stock.momentum6m.toFixed(2)}</td><td>${stock.price.toFixed(2)}</td>`;
+                row.innerHTML = `<td>${stock.ticker}</td><td>${stock.momentum1w.toFixed(2)}</td><td>${stock.momentum1m.toFixed(2)}</td>
+                <td>${stock.momentum3m.toFixed(2)}</td><td>${stock.momentum6m.toFixed(2)}</td><td>${stock.price.toFixed(2)}</td>`;
                 row.addEventListener("click", () => openPopup(stock.ticker, stock.exchange));
                 tableBody.appendChild(row);
             });
@@ -234,7 +245,7 @@
 
         document.querySelectorAll("th").forEach((th, index) => {
             th.addEventListener("click", () => {
-                const columns = ["ticker", "momentum1m", "momentum3m", "momentum6m", "price"];
+                const columns = ["ticker", "momentum1w", "momentum1m", "momentum3m", "momentum6m", "price"];
                 let column = columns[index];
                 
                 if (currentSortColumn === column) {
@@ -265,12 +276,13 @@
         function sortTable(columnIndex) {
             let stocks = Array.from(document.getElementById("stock-table-body").children).map(row => ({
                 ticker: row.children[0].textContent,
-                momentum1m: parseFloat(row.children[1].textContent),
-                momentum3m: parseFloat(row.children[2].textContent),
-                momentum6m: parseFloat(row.children[3].textContent),
-                price: parseFloat(row.children[4].textContent)
+                momentum1w: parseFloat(row.children[1].textContent),
+                momentum1m: parseFloat(row.children[2].textContent),
+                momentum3m: parseFloat(row.children[3].textContent),
+                momentum6m: parseFloat(row.children[4].textContent),
+                price: parseFloat(row.children[6].textContent)
             }));
-            const key = ["momentum1m", "momentum3m", "momentum6m", "price"][columnIndex - 1];
+            const key = ["momentum1w", "momentum1m", "momentum3m", "momentum6m", "price"][columnIndex - 1];
             sortDirection[key] = !sortDirection[key];
             stocks.sort((a, b) => sortDirection[key] ? a[key] - b[key] : b[key] - a[key]);
             updateTable(stocks);
