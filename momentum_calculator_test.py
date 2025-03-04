@@ -20,11 +20,22 @@ MOMENTUM_PERIODS = {
     "1y": 252   # 1年
 }
 
-# ⏳ 過去何日間の出来高モメンタムを計算するか設定 #株価モメンタム銘柄がはじかれやすいので却下
+
+# ⏳ 過去何日間の出来高を計算するか設定
 MOMENTUM_PERIODS_VOLUME = {
     "1w_vol": 5,    # 1週間
     "1m_vol": 21,   # 1か月
     "3m_vol": 63,   # 3か月
+}
+
+#test
+# ⏳ 過去何日間の売買代金(Trading Value)計算
+MOMENTUM_PERIODS_VALUE = {
+    "1w_val": 5,    # 1週間
+    "1m_val": 21,   # 1か月
+    "3m_val": 63,   # 3か月
+    "6m_val": 126,  # 6か月
+    "1y_val": 252   # 1年
 }
 
 # 1️⃣ GitHub から NYSE & NASDAQ の銘柄リストを取得
@@ -84,6 +95,12 @@ def calculate_momentum(df, ticker):
 #test
     # Price 情報を追加
     momentum["Price"] = df["Close"].iloc[-1]
+    #test
+    # Volume 出来高を追加
+    momentum["Volume"] = df["Volume"].iloc[-1]
+
+    # Value 売買代金(株価Price x 出来高Volume)を追加
+    momentum["Value"] = df["Close"].iloc[-1] * df["Volume"].iloc[-1]
 
     # Exchange 情報を追加
     momentum["Exchange"] = "NYSE" if ticker in nyse_tickers else "NASDAQ"

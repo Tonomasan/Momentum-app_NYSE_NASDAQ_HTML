@@ -76,6 +76,9 @@ def calculate_momentum(df, ticker):
     # Price 情報を追加
     momentum["Price"] = df["Close"].iloc[-1]
 
+    # Value 売買代金(株価Price x 出来高Volume)を追加
+    momentum["Value"] = df["Close"].iloc[-1] * df["Volume"].iloc[-1]
+
     # Exchange 情報を追加
     momentum["Exchange"] = "NYSE" if ticker in nyse_tickers else "NASDAQ"
     return momentum

@@ -91,6 +91,12 @@
         <label>最大値: </label>
         <input type="number" id="max-price" value="">
     </div>
+    <div class="input-container">
+        <label>売買代金 最小値: </label>
+        <input type="number" id="min-value" value="5000000">
+        <label>最大値: </label>
+        <input type="number" id="max-value" value="">
+    </div>
 
     <div>※行クリック,銘柄チャート表示</div>
     <div>フィルター後の銘柄数: <span id="filtered-ticker-count">0</span></div>
@@ -104,6 +110,7 @@
                 <th data-sort="3">3ヶ月</th>
                 <th data-sort="4">6ヶ月</th>
                 <th data-sort="6">株価</th>
+                <th data-sort="7">売買代金</th>
             </tr>
         </thead>
         <tbody id="stock-table-body"></tbody>
@@ -192,6 +199,7 @@
                     momentum3m: parseFloat(cols[3]), 
                     momentum6m: parseFloat(cols[4]),
                     price: parseFloat(cols[6]),
+                    value: parseFloat(cols[7]),
                 };
             }).filter(stock => stock.ticker !== "");
         }
@@ -209,13 +217,16 @@
             const max6m = isNaN(parseFloat(document.getElementById("max-6m").value)) ? Infinity : parseFloat(document.getElementById("max-6m").value);
             const minprice = isNaN(parseFloat(document.getElementById("min-price").value)) ? -Infinity : parseFloat(document.getElementById("min-price").value);
             const maxprice = isNaN(parseFloat(document.getElementById("max-price").value)) ? Infinity : parseFloat(document.getElementById("max-price").value);
-            
+            const minvalue = isNaN(parseFloat(document.getElementById("min-value").value)) ? -Infinity : parseFloat(document.getElementById("min-value").value);
+            const maxvalue = isNaN(parseFloat(document.getElementById("max-value").value)) ? Infinity : parseFloat(document.getElementById("max-value").value);
+
             let filteredStocks = stocks.filter(stock => 
                 stock.momentum1w >= min1w && stock.momentum1w <= max1w &&
                 stock.momentum1m >= min1m && stock.momentum1m <= max1m &&
                 stock.momentum3m >= min3m && stock.momentum3m <= max3m &&
                 stock.momentum6m >= min6m && stock.momentum6m <= max6m &&
-                stock.price >= minprice && stock.price <= maxprice
+                stock.price >= minprice && stock.price <= maxprice &&
+                stock.value >= minvalue && stock.value <= maxvalue
             );
 
             document.getElementById("filtered-ticker-count").innerText = filteredStocks.length;
@@ -236,7 +247,8 @@
                 row.dataset.ticker = stock.ticker;
                 row.dataset.exchange = stock.exchange; // 取引所情報をデータ属性に追加
                 row.innerHTML = `<td>${stock.ticker}</td><td>${stock.momentum1w.toFixed(2)}</td><td>${stock.momentum1m.toFixed(2)}</td>
-                <td>${stock.momentum3m.toFixed(2)}</td><td>${stock.momentum6m.toFixed(2)}</td><td>${stock.price.toFixed(2)}</td>`;
+                <td>${stock.momentum3m.toFixed(2)}</td><td>${stock.momentum6m.toFixed(2)}
+                </td><td>${stock.price.toFixed(2)}</td><td>${stock.value.toFixed(2)}</td>`;
                 row.addEventListener("click", () => openPopup(stock.ticker, stock.exchange));
                 tableBody.appendChild(row);
             });
@@ -245,7 +257,7 @@
 
         document.querySelectorAll("th").forEach((th, index) => {
             th.addEventListener("click", () => {
-                const columns = ["ticker", "momentum1w", "momentum1m", "momentum3m", "momentum6m", "price"];
+                const columns = ["ticker", "momentum1w", "momentum1m", "momentum3m", "momentum6m", "price", "value"];
                 let column = columns[index];
                 
                 if (currentSortColumn === column) {
@@ -280,9 +292,10 @@
                 momentum1m: parseFloat(row.children[2].textContent),
                 momentum3m: parseFloat(row.children[3].textContent),
                 momentum6m: parseFloat(row.children[4].textContent),
-                price: parseFloat(row.children[6].textContent)
+                price: parseFloat(row.children[6].textContent),
+                value: parseFloat(row.children[7].textContent)
             }));
-            const key = ["momentum1w", "momentum1m", "momentum3m", "momentum6m", "price"][columnIndex - 1];
+            const key = ["momentum1w", "momentum1m", "momentum3m", "momentum6m", "price", "value"][columnIndex - 1];
             sortDirection[key] = !sortDirection[key];
             stocks.sort((a, b) => sortDirection[key] ? a[key] - b[key] : b[key] - a[key]);
             updateTable(stocks);
