@@ -97,7 +97,7 @@ def main():
     extract_tickers_from_txt(nyse_file, nasdaq_file, ticker_file)
     
     # 🔹 銘柄リストを読み込み
-    tickers = load_tickers_from_csv(ticker_file)
+    tickers = list(set(load_tickers_from_csv(ticker_file)))  # 重複排除
     
     global nyse_tickers
     nyse_tickers = pd.read_csv(nyse_file, header=None, names=["Ticker"])["Ticker"].tolist()

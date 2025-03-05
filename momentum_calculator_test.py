@@ -96,8 +96,8 @@ def calculate_momentum(df, ticker):
     # Price 情報を追加
     momentum["Price"] = df["Close"].iloc[-1]
     #test
-    # Volume 出来高を追加
-    momentum["Volume"] = df["Volume"].iloc[-1]
+    # # Volume 出来高を追加
+    # momentum["Volume"] = df["Volume"].iloc[-1]
 
     # Value 売買代金(株価Price x 出来高Volume)を追加
     momentum["Value"] = df["Close"].iloc[-1] * df["Volume"].iloc[-1]
@@ -126,7 +126,7 @@ def main():
     
     # 🔹 銘柄リストを読み込み
     print(f" {ticker_file} ticker_file...")
-    tickers = load_tickers_from_csv(ticker_file)
+    tickers = list(set(load_tickers_from_csv(ticker_file)))  # 重複排除
     # tickers = {"AACT","AAM","AAMI","AAP","AAT","AACBU","AACG","AADI","AAPL","META"}
 
     global nyse_tickers
