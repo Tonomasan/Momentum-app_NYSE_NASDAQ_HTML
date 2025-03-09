@@ -85,6 +85,8 @@ def calculate_momentum(df, ticker):
 
 # 🚀 メイン処理
 def main():
+    os.chdir(r"C:\work\kabu\Momentum_NYSE_NASDAQ_HTML")
+    
     nyse_file = "nyse_tickers.txt"
     nasdaq_file = "nasdaq_tickers.txt"
     ticker_file = "tickers.csv"
