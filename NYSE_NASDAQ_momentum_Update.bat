@@ -1,6 +1,6 @@
 @echo off
 echo yfinanceデータ取得開始
-C:\Users\tonoma\.virtualenvs\kabu-ySnafzVC\Scripts\python.exe C:\work\kabu\Momentum_NYSE_NASDAQ_HTML\momentum_calculator.py
+C:\work\kabu\Momentum_NYSE_NASDAQ_HTML\Mom_US\Scripts\python.exe C:\work\kabu\Momentum_NYSE_NASDAQ_HTML\momentum_calculator.py
 echo データ取得完了
 
 echo git push開始
