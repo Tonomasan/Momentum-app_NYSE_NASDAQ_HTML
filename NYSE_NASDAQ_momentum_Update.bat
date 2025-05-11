@@ -1,7 +1,7 @@
-rem @echo off
-rem echo yfinanceデータ取得開始
-rem C:\work\kabu\Momentum_NYSE_NASDAQ_HTML\Mom_US\Scripts\python.exe C:\work\kabu\Momentum_NYSE_NASDAQ_HTML\momentum_calculator.py
-rem echo データ取得完了
+@echo off
+echo yfinanceデータ取得開始
+C:\work\kabu\Momentum_NYSE_NASDAQ_HTML\Mom_US\Scripts\python.exe C:\work\kabu\Momentum_NYSE_NASDAQ_HTML\momentum_calculator.py
+echo データ取得完了
 
 echo git push開始
 cd C:\work\kabu\Momentum_NYSE_NASDAQ_HTML
