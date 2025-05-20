@@ -10,7 +10,7 @@ cd C:\work\kabu\Momentum_NYSE_NASDAQ_HTML
 "C:\Program Files\Git\cmd\git.exe" push -u origin_momentum_nyse_nasdaq main
 echo git pushŠ®—¹
 
-pause
+rem pause
 
 
 
