@@ -10,7 +10,24 @@ cd C:\work\kabu\Momentum_NYSE_NASDAQ_HTML
 "C:\Program Files\Git\cmd\git.exe" push -u origin_momentum_nyse_nasdaq main
 echo git pushŠ®—¹
 
+echo Œ»İ“úæ“¾
+cd /d %~dp0
+setlocal enabledelayedexpansion
+set YYYY=%Date:~0,4%
+set MM=%Date:~5,2%
+set DD=%Date:~8,2%
+set HH=%Time:~0,2%
+set HH=%HH: =0%
+set MIN=%Time:~3,2%
+set MIN=%MIN: =0%
+set SS=%Time:~6,2%
+set SS=%SS: =0%
+set TIMESTAMP=%YYYY%/%MM%/%DD%/%HH%%MIN%
+echo Time = %TIMESTAMP%
+endlocal
+
 pause
+
 
 
 
