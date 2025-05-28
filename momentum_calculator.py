@@ -26,9 +26,9 @@ def download_txt(url, filename):
     if response.status_code == 200:
         with open(filename, "wb") as f:
             f.write(response.content)
-        print(f"✅ {filename} をダウンロードしました")
+        print(f"{filename} をダウンロードしました")
     else:
-        print(f"❌ {filename} のダウンロードに失敗しました: {response.status_code}")
+        print(f"{filename} のダウンロードに失敗しました: {response.status_code}")
 
 # 2️⃣ TXTファイルから Ticker リストを抽出
 def extract_tickers_from_txt(nyse_file, nasdaq_file, output_file):
@@ -37,7 +37,7 @@ def extract_tickers_from_txt(nyse_file, nasdaq_file, output_file):
     
     all_tickers_df = pd.concat([nyse_df, nasdaq_df], ignore_index=True)
     all_tickers_df.to_csv(output_file, index=False)
-    print(f"✅ {output_file} に {len(all_tickers_df)} 銘柄を保存しました")
+    print(f"{output_file} に {len(all_tickers_df)} 銘柄を保存しました")
 
 # 3️⃣ `tickers.csv` を読み込む
 def load_tickers_from_csv(csv_file):
@@ -52,14 +52,14 @@ def fetch_stock_data(ticker):
         df = yf.download(ticker, start=start_date, end=end_date, auto_adjust=False, multi_level_index=False)
 
         if df.empty:
-            print(f"⚠️ {ticker} のデータが見つかりません (空のデータフレーム)")
+            print(f"{ticker} のデータが見つかりません (空のデータフレーム)")
             return None
 
         df.index = pd.to_datetime(df.index)
         return df
 
     except Exception as e:
-        print(f"❌ {ticker} のデータ取得失敗: {e}")
+        print(f"{ticker} のデータ取得失敗: {e}")
         return None
 
 # 5️⃣ モメンタムを計算
@@ -105,10 +105,10 @@ def main():
     nyse_tickers = pd.read_csv(nyse_file, header=None, names=["Ticker"])["Ticker"].tolist()
     
     results = []
-    print(f"📌 {len(tickers)} 銘柄のデータ取得開始...")
+    print(f"{len(tickers)} 銘柄のデータ取得開始...")
     
     for i, ticker in enumerate(tickers):
-        print(f"📊 {i+1}/{len(tickers)}: {ticker} のデータ取得中...")
+        print(f"{i+1}/{len(tickers)}: {ticker} のデータ取得中...")
         df = fetch_stock_data(ticker)
         
         if df is not None:
@@ -120,7 +120,7 @@ def main():
     # 📁 CSVに保存
     df_momentum = pd.DataFrame(results)
     df_momentum.to_csv("momentum_data.csv", index=False)
-    print("✅ モメンタムデータ保存完了: momentum_data.csv")
+    print("モメンタムデータ保存完了: momentum_data.csv")
 
 if __name__ == "__main__":
     main()

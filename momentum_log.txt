@@ -1,0 +1,32 @@
+Traceback (most recent call last):
+  File "C:\work\kabu\Momentum_NYSE_NASDAQ_HTML\momentum_calculator.py", line 8, in <module>
+    from pandas_datareader import data as pdr
+ModuleNotFoundError: No module named 'pandas_datareader'
+Traceback (most recent call last):
+  File "C:\work\kabu\Momentum_NYSE_NASDAQ_HTML\momentum_calculator.py", line 8, in <module>
+    from pandas_datareader import data as pdr
+ModuleNotFoundError: No module named 'pandas_datareader'
+Traceback (most recent call last):
+  File "C:\work\kabu\Momentum_NYSE_NASDAQ_HTML\momentum_calculator.py", line 8, in <module>
+    from pandas_datareader import data as pdr
+ModuleNotFoundError: No module named 'pandas_datareader'
+Traceback (most recent call last):
+  File "C:\work\kabu\Momentum_NYSE_NASDAQ_HTML\momentum_calculator.py", line 8, in <module>
+    from pandas_datareader import data as pdr
+ModuleNotFoundError: No module named 'pandas_datareader'
+Traceback (most recent call last):
+  File "C:\work\kabu\Momentum_NYSE_NASDAQ_HTML\momentum_calculator.py", line 8, in <module>
+    from pandas_datareader import data as pdr
+ModuleNotFoundError: No module named 'pandas_datareader'
+Traceback (most recent call last):
+  File "C:\work\kabu\Momentum_NYSE_NASDAQ_HTML\momentum_calculator.py", line 8, in <module>
+    from pandas_datareader import data as pdr
+ModuleNotFoundError: No module named 'pandas_datareader'
+Traceback (most recent call last):
+  File "C:\work\kabu\Momentum_NYSE_NASDAQ_HTML\momentum_calculator.py", line 8, in <module>
+    from pandas_datareader import data as pdr
+ModuleNotFoundError: No module named 'pandas_datareader'
+Traceback (most recent call last):
+  File "C:\work\kabu\Momentum_NYSE_NASDAQ_HTML\momentum_calculator.py", line 8, in <module>
+    from pandas_datareader import data as pdr
+ModuleNotFoundError: No module named 'pandas_datareader'

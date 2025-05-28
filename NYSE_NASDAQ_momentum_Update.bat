@@ -1,4 +1,13 @@
 @echo off
+echo [%date% %time%] バッチ呼び出し >> task_debug.log
+
+cd /d C:\work\kabu\Momentum_NYSE_NASDAQ_HTML
+"C:\Users\tonoma\AppData\Local\Programs\Python\Python313\python.exe" momentum_calculator.py >> momentum_log.txt 2>&1
+
+echo [%date% %time%] バッチ終了 code=%ERRORLEVEL% >> task_debug.log
+
+
+
 echo yfinanceデータ取得開始
 C:\work\kabu\Momentum_NYSE_NASDAQ_HTML\Mom_US\Scripts\python.exe C:\work\kabu\Momentum_NYSE_NASDAQ_HTML\momentum_calculator.py
 echo データ取得完了
